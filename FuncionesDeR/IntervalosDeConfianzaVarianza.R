@@ -32,3 +32,5 @@ for (i in 1:n){
   }
 }
 title(paste("Quedaron","fuera", mal,"intervalos" ,"de",n))
+
+
