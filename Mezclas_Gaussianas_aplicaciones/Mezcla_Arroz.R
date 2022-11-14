@@ -4,6 +4,8 @@
 #descomentar y correr la linea siguiente en caso de que no se tenga instalado
 ## la paqueteria mclust
 ## install.packages("mclust")
+
+
 ##  Cargar la libreria pROC, para poder hacer evaluación multiclases
 #usanddo curva y roc, ademas de calcular el área-
 ## #descomentar y correr la linea siguiente en caso de que no se tenga instalado
@@ -12,11 +14,11 @@
 library(readxl)
 library(mclust)
 library(pROC)
-
+library(xtable)
 # Carga del Dataset "Rice_MSC_Dataset",cambiar la ruta de acuerdo al lugar 
 #en donde se encuentre alojado el archivo
-Rice_MSC_Dataset <- read_excel("Rice_MSC_Dataset/Rice_MSC_Dataset.xlsx")
-
+Rice_MSC_Dataset <- read_excel("Documents/GitHub/R_projects/Mezclas_Gaussianas_aplicaciones/Rice_MSC_Dataset/Rice_MSC_Dataset.xlsx")
+View(Rice_MSC_Dataset)
 #Filrar los datos, de manera que solo tomemos las primeras 4 columnas y la ultima
 #columna
 
@@ -32,6 +34,10 @@ indices<-sample(1:nrow(ArrozDatos),size = floor(0.40*nrow(ArrozDatos)),replace =
 #Corriendo este table puede observar como se estan tomando los datos 
 #de entrenamiento
 table(ArrozDatos[indices,]$CLASS)
+table(ArrozDatos[-indices,]$CLASS)
+print(xtable( table(ArrozDatos[indices,]$CLASS)),include.rownames=TRUE)
+print(xtable( table(ArrozDatos[-indices,]$CLASS)),include.rownames=TRUE)
+print(xtable(head(ArrozDatos),include.rownames=FALSE))
 # Creamos el data frame X el cual solo contiene las caracteristicas 
 #para los datos de entrenamiento
 X<-ArrozDatos[indices,1:4]
@@ -42,14 +48,27 @@ X<-ArrozDatos[indices,1:4]
 
 colores<-hcl.colors(5,"Plasma")
 vectores<-as.vector(unique(ArrozDatos[indices,]$CLASS))
-plot(X,main="Diagrama de Dispersion",lower.panel=NULL,col=colores[as.factor(ArrozDatos[indices,]$CLASS)],
-     labels=c("Area","Perimetro","EjeMayor","EjeMenor"),pch=19)
-par(xpd=T)
-legend(x=0,y=0.49,legend = c("Arborio","Basmati","Ipsala","Jasmine","Karacadag"),fill=colores,cex = 0.6)
+
+plot(X,lower.panel=NULL,col=colores[as.factor(ArrozDatos[indices,]$CLASS)],
+     labels=c("AREA","PERIMETER","MAJOR_AXIS","MINOR_AXIS"),pch=19)
+par(xpd=TRUE)
+
+
+
+dev.new(width=15,heigth=7)
+
+pairs(X, lower.panel=NULL,col=colores[as.factor(ArrozDatos[indices,]$CLASS)],
+      labels=c("AREA","PERIMETER","MAJOR_AXIS","MINOR_AXIS"),pch=19,oma=c(4, 4, 8, 15))
+par(xpd=TRUE)
+legend(x=0.1,y=0.4,legend = c("Arborio","Basmati","Ipsala","Jasmine","Karacadag"),fill=colores,cex = 0.9)
+
+quartz.save("rplotfinal",type="png",device=dev.cur(),dpi=100)
+
 
 #Corremos la funcion Mclust, indicando "G", el numero de componentes
 
 GMM_Arroz<-Mclust(X,G=5)
+summary(GMM_Arroz,parameters=TRUE)
 #Esta linea siguiente la puede descomentar en caso de que desee 
 #observar los parametros de cada componente,
 #indicando parameters=TRUE puede observar todas los parametros de cada componente,en caso de no
@@ -71,7 +90,7 @@ table(ArrozDatos[-indices,]$CLASS)
 #la forma directa de una matriz de confusión por el orden en como la funcion esta creando las componentes
 table(ArrozDatos[-indices,]$CLASS,prediccion$classification)
 
-
+print(xtable(table(ArrozDatos[-indices,]$CLASS,prediccion$classification)))
 #Usamos la funcion multiclass.roc para realizar evaluacion multiclase
 #dentro de variable creada podra encontrar las curvas rocs realizadas por pares
 
@@ -80,6 +99,7 @@ x
 colores<-c("#FE12DA","#FF6202","#FE2312","#FFB202","#FFFF02","#C2FF02",
            "#28CF60","#28CDCF","#2860CF")
 rs <- x[['rocs']]
+
 #graficamos las curvas roc con sus respectivas AUC
 plot.roc(rs[[1]],xlab = "1-Especificidad",ylab = "Sensibilidad",legacy.axes = T,axes = T,print.thres = F,
          grid = T,col=1)
