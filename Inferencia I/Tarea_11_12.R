@@ -1,4 +1,5 @@
 library(readr)
+library(MASS)
 carmilage <- read_csv("Downloads/carmilage.csv")
 
 #Ajuste de modelo de regresión lineal simple
@@ -51,4 +52,15 @@ legend(x=280,y=4, # Coordenadas
        col = c("red", "blue"),
        lwd = 2,cex=0.5)
 summary(model2,paremeters=TRUE)
+
+#Problema 11
+CORIS <- read_csv("Downloads/CORIS.csv")
+CORIS2<-CORIS[,2:11]
+#Creación de un modelo considerando todas las variables explicativas
+model3_completo<-lm(CORIS$chd~.,data = CORIS2)
+
+model3_back <- stepAIC(model3_completo, trace=TRUE, 
+                   direction="backward")
+model3_back$anova
+summary(model3_back)
 
