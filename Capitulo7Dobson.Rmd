@@ -27,7 +27,7 @@ l(\pi_1,\ldots,\pi_n;y_1,\ldots,y_n)=\left[\sum_{j=1}^{N}y_j\log\left(\dfrac{\pi
 
 #### **Sección 7.2 Modelos Lineales Generalizados**
 
-Sera de interés ahora determinar la proporción de sucesos $P_i=Y_i/n_i$ en cada subgrupo en términos de los niveles de factor y otra variable explicativa que caracteriza al subgrupo en cuestión
+Sera de interés ahora determinar la proporción de sucesos $P_i=Y_i/n_i$ en cada subgrupo en términos de los niveles de factor y otra variable explicativa que caracteriza al subgrupo en cuestión. Como $\mathbb{E}(Y_i)=n_i\pi_i$, entonces $\mathbb{E}(P_i)=\pi_i$
 
 
 
