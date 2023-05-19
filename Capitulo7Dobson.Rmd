@@ -1,0 +1,36 @@
+---
+title: "Variables binarias y regresión logistica"
+author: "Juan Esaul, Irving Rosas y Daniel Martinez"
+output: html_notebook
+---
+
+#### **Sección 7.1 Distribuciones de probabilidad**
+En un principio habíamos considerado modelos lineales en los que la salida o variable respuesta podía tomar una infinidad de valores dependiendo de los valores asignados a los predictores. Sin embargo ahora sera de interés considerar modelos en donde nos restringimos a que la variable de respuesta toma valores en una escala binaria.  A manera de ejemplo, la respuesta puede ser estar "vivo" o "muerto", "presento" o "no presente", claramente estas respuesta no son cuantitativas, sin embargo podemos asignarles "éxito" o "fracaso" como términos genéricos de modo que así podamos codificar estas respuestas.
+
+Para realizar esto, empezamos definiendo **la variable aleatoria binaria**
+$$
+Z=\left\{\begin{array}{cc}
+1& \text{si la respuesta es un exito}\\
+0 & \text{si la respuesta es un fracaso}
+\end{array}\right.
+$$
+con probabilidades $\mathbb{P}(Z=1)=\pi$ y $\mathbb{P}(Z=0)=1-\pi$. A manera de generalización, si hay contamos con $n$ variables aleatoria  binarias $Z_1,\ldots,Z_n$ independientes con probabilidades $\mathbb{P}(Z_i=1)=\pi_i$ y $\mathbb{P}(Z_i=0)=1-\pi_i$, entonces su función conjunta de probabilidad es 
+$$\prod_{j=1}^n \pi_j^{z_j}(1-\pi_j)^{1-z_j}= \exp\left[\sum_{j=1}^n z_j \log\left(\dfrac{\pi_j}{1-\pi_j}\right)+\sum_{j=1}^n \log(1-\pi_j)\right],$$
+donde el producto es consecuencia de la independencia de las $Z_i$ y que $\mathbb{P}(Z_i=z_i)=\pi_j^{z_j}(1-\pi_j)^{1-z_j}$, puesto que $z_j\in\{0,1\}$. Adicional podemos notar que la función conjunta de probabilidad es un miembro de la familia exponencial. Notemos que si consideramos el caso en que todas las las $\pi_j's$ con iguales, podemos definir la variable 
+$$Y=\sum_{j=1}^n Z_j,$$
+que simplemente cuenta el numero de éxitos en $n$ realizaciones, la cual como ya sabemos tiene distribución de probabilidad binomial de parámetros $n$ y $\pi$. 
+
+Por ultimo consideremos el caso de $N$ variables aleatorias independientes $Y_1,\ldots,Y_n$ correspondientes al numero de éxitos en $N$ subgrupos diferentes, tal que $Y_i\sim Bin(n_i,\pi_i)$, y por lo tanto la función de verosimilitud viene dada por:
+$$\begin{split}
+l(\pi_1,\ldots,\pi_n;y_1,\ldots,y_n)=\left[\sum_{j=1}^{N}y_j\log\left(\dfrac{\pi_j}{1-\pi_j}\right)+  n_j\log(1-\pi_j)+\log\binom{n_j}{y_j}\right].
+\end{split}$$
+
+#### **Sección 7.2 Modelos Lineales Generalizados**
+
+Sera de interés ahora determinar la proporción de sucesos $P_i=Y_i/n_i$ en cada subgrupo en términos de los niveles de factor y otra variable explicativa que caracteriza al subgrupo en cuestión
+
+
+
+A link function transforms the probabilities of the levels of a categorical response variable to a continuous scale that is unbounded. Once the transformation is complete, the relationship between the predictors and the response can be modeled with linear regression.
+
+

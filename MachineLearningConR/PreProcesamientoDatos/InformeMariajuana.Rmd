@@ -1,0 +1,35 @@
+---
+title: 'Informe Mariajuana'
+author: "Daniel Martinez"
+output:
+  html_notebook: 
+    theme: cosmo
+  pdf_document: default
+---
+
+
+
+```{r}
+## Carga del Dataset
+Mariajuana<-read.table("/Users/danimathud/Downloads/Mariajuana.txt")
+#attach(Mariajuana) Correr y luego comentar para que no aparezca en el compilado
+```
+
+Jonás, Jacobo y José están probando un nuevo fertilizante que, según los desarrolladores, influye favorablemente en el crecimiento de las plantas. José, sin embargo, es excéptico, mientras que Jonás es ansioso. Por tal motivo, José decide no aplicar el fertilizante a sus plantas, Jonás decide aplicar 1.5 kg de fertilizante y Jacobo aplica 1 kg de dicho fertilizante (la especie de planta es la misma y las condiciones del suelo en el que cada uno siembra sus plantas es la misma).
+
+El archivo ``Mariajuana.txt'' contiene datos recabados por los tres respecto al día en que sus plantas alcanzaron la altura máxima. Ese mismo día se midió la temperatura promedio del día y la precipitación pluvial promedio desde la plantación hasta el día de medición de la atura.
+
+Responde las siguientes preguntas (usa siempre $\alpha=0.05$):
+
+1. ¿Existe una relación lineal entre la altura de las plantas y las otras variables consideradas?
+
+Para responder a esta pregunta, primeramente veamos el gráfico de dispersión para ir validando la relación lineal:
+
+```{r,echo=TRUE,eval=TRUE,warning=FALSE, cache=FALSE, message=FALSE}
+
+# CDispersion de Altura vs  Temperatura, presipitacion y dosis
+scatterplotMatrix(cbind(Mariajuana$Altura.en.cm,Mariajuana[,2:4]),smooth=FALSE, regLine=TRUE, ellipse=TRUE,
+                  by.groups=TRUE, diagonal=T,lower.panel=NULL)
+```
+
+

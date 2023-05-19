@@ -1,0 +1,64 @@
+---
+title: "Ayudantia 18 Abril"
+output: html_notebook
+---
+
+
+```{r}
+library(readr)
+library(latex2exp)
+library(ggplot2)
+library(qpcR)
+Dataset<-read.csv("/Users/danimathud/Documents/GitHub/R_projects/ModelosEstadisticos1/Datas/real_state_data.csv")
+names(Dataset)<-c("Size","Assessed","Price")
+head(Dataset)
+summary(Dataset)
+str(Dataset)
+attach(Dataset)
+
+```
+
+```{r}
+Modelo1<-lm(Price~Size+Assessed)
+summary(Modelo1)
+```
+
+a) Calcular un intervalo de confianza para $\beta_2$. Que puede deducir de este resultado.
+b) Generar un intervalo de confianza de cobertura $95\%$ para el precio de venta correspondiente a una vivienda de área $17$ y $46000$ dolares.
+c) Construir una prueba de hipótesis para analizar si $\beta_2=0$
+
+**Solución**
+
+**a)** 
+```{r}
+fsito<-qf(0.05,3,17)
+varBeta2<-0.28518
+ConfInf<-0.04518-sqrt(varBeta2*(3)*fsito)
+ConfSup<-0.04518+sqrt(varBeta2*(3)*fsito)
+paste("Intervalo de confianza para ","beta2","(",round(ConfInf,4),round(ConfSup,4),")")
+```
+**Análisis de residuales**
+
+ ***studentizados (Normalizados)***
+ $$\dfrac{\hat{e}_i}{s\sqrt{1-hii}},\quad H=X^T(X^T X)^{-1}X,$$
+ con $s^2=MSE$
+ 
+  ***R-studentizados ***
+   $$\dfrac{\hat{e}_i}{s_{(i)}\sqrt{1-hii}},\quad H=X^T(X^T X)^{-1}X,$$
+```{r}
+scatter_exp<-ggplot(data=Dataset,aes(x=Size,y=Assessed))+geom_point()+geom_smooth()
+scatter_exp
+```
+
+```{r}
+modelo1_Press<-PRESS(Modelo1)
+print(modelo1_Press$stat)
+print(modelo1_Press$P.square)
+```
+```{r}
+BandaSup<-function(k){
+  q<-qbeta(nivel)
+}
+```
+
+
