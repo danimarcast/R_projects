@@ -1,0 +1,648 @@
+---
+title: "Variables binarias y regresión logística"
+author: "Juan Esaul, Irving Rosas y Daniel Martinez"
+output: html_notebook
+---
+
+#### **Sección 7.1 Distribuciones de probabilidad**
+
+En un principio habíamos considerado modelos lineales en los que la
+salida o variable respuesta podía tomar una infinidad de valores
+dependiendo de los valores asignados a los predictores. Sin embargo
+ahora sera de interés considerar modelos en donde nos restringimos a que
+la variable de respuesta toma valores en una escala binaria. A manera de
+ejemplo, la respuesta puede ser estar "vivo" o "muerto", "presento" o
+"no presente", claramente estas respuesta no son cuantitativas, sin
+embargo podemos asignarles "éxito" o "fracaso" como términos genéricos
+de modo que así podamos codificar estas respuestas.
+
+Para realizar esto, empezamos definiendo **la variable aleatoria
+binaria** $$
+Z=\left\{\begin{array}{cc}
+1& \text{si la respuesta es un exito}\\
+0 & \text{si la respuesta es un fracaso}
+\end{array}\right.
+$$ con probabilidades $\mathbb{P}(Z=1)=\pi$ y $\mathbb{P}(Z=0)=1-\pi$. A
+manera de generalización, si hay contamos con $n$ variables aleatoria
+binarias $Z_1,\ldots,Z_n$ independientes con probabilidades
+$\mathbb{P}(Z_i=1)=\pi_i$ y $\mathbb{P}(Z_i=0)=1-\pi_i$, entonces su
+función conjunta de probabilidad es
+$$\prod_{j=1}^n \pi_j^{z_j}(1-\pi_j)^{1-z_j}= \exp\left[\sum_{j=1}^n z_j \log\left(\dfrac{\pi_j}{1-\pi_j}\right)+\sum_{j=1}^n \log(1-\pi_j)\right],$$
+donde el producto es consecuencia de la independencia de las $Z_i$ y que
+$\mathbb{P}(Z_i=z_i)=\pi_j^{z_j}(1-\pi_j)^{1-z_j}$, puesto que
+$z_j\in\{0,1\}$. Adicional podemos notar que la función conjunta de
+probabilidad es un miembro de la familia exponencial. Notemos que si
+consideramos el caso en que todas las las $\pi_j's$ con iguales, podemos
+definir la variable $$Y=\sum_{j=1}^n Z_j,$$ que simplemente cuenta el
+numero de éxitos en $n$ realizaciones, la cual como ya sabemos tiene
+distribución de probabilidad binomial de parámetros $n$ y $\pi$.
+
+Por ultimo consideremos el caso de $N$ variables aleatorias
+independientes $Y_1,\ldots,Y_n$ correspondientes al numero de éxitos en
+$N$ subgrupos diferentes, tal que $Y_i\sim Bin(n_i,\pi_i)$, y por lo
+tanto la función de verosimilitud viene dada por: $$\begin{split}
+l(\pi_1,\ldots,\pi_n;y_1,\ldots,y_n)=\left[\sum_{j=1}^{N}y_j\log\left(\dfrac{\pi_j}{1-\pi_j}\right)+  n_j\log(1-\pi_j)+\log\binom{n_j}{y_j}\right].
+\end{split}$$
+
+#### **Sección 7.2 Modelos Lineales Generalizados**
+
+Nuestro interés ahora será determinar la proporción de sucesos
+$P_i=Y_i/n_i$ en cada subgrupo en términos de los factores de nivel
+(todos los posibles valores que toma la variable categórica) y otra
+variable explicativa que caracteriza al subgrupo en cuestión. Como
+$\mathbb{E}(Y_i)=n_i\pi_i$, entonces $\mathbb{E}(P_i)=\pi_i$, y
+modelamos las probabilidades $\pi_i$ como
+$$g(\pi_i)=\textbf{x}_i^T\beta,$$ donde $\textbf{x}_i$ es un vector de
+variables explicativas (variables dummy para los factores de nivel),
+$\beta$ es un vector de parámetros y $g$ es una función de enlace (Link
+function).
+
+Una **función de enlace** es aquella que *transforma las probabilidades
+de los factores de nivel de de una variable de respuesta categórica en
+una escala continua*. Una vez que se realiza la transformación. la
+relación entre los predictores y la respuesta puede ser modelada con una
+regresión lineal.
+
+Un caso sencillo es el **modelo lineal** $$
+\pi=\textbf{x}^T\beta.
+$$ Aunque este modelo suele ser usado en algunas aplicaciones practicas,
+tiene la desventaja que aunque $\pi$ es una probabilidad, los valores
+ajustados $\textbf{x}^T\beta$, pueden llegar a ser mayores a 1 o menores
+a 0.
+
+Así para garantizar que $\pi$ este restringido al intervalo $[0,1]$, lo
+modelamos usando una función de distribución, de modo que
+$$\pi=\int_{-\infty}^t f(s)ds,$$ donde $f(s\geq 0)$ y
+$\int_{-\infty}^{\infty}f(s)ds=1$. A la función de densidad $f(s)$ se le
+llama **distribución de tolerancia**.
+
+#### **Sección 7.3 Modelos dosis respuesta** 
+
+Históricamente uno de los primeros usos de modelos similares a la
+regresión para datos binomiales fue en resultados de bio ensayo. En
+estos modelos la respuesta era la proporción o porcentaje de éxitos;
+como por ejemplo, la proporción de animales experimentales asesinados
+por distintos niveles de dosis de una cierta sustancia toxica. Estos
+datos a veces se les denominan **respuestas cuánticas**. El objetivo
+aquí es describir la probabilidad de "éxito" $\pi$, como una función de
+la dosis suministrada, $x$; por ejemplo $g(\pi)=\beta_0+\beta_1 x$.
+
+Si la distribución de tolerancia $f(s)$ es la distribución uniforme
+sobre el intervalo $[a,b]$, es decir $$
+f(s)=\left\{
+\begin{array}{cc}
+\dfrac{1}{b-a} & \text{ si } a\leq x\leq b\\
+0 & \text{ en otro caso}
+\end{array}
+\right.,
+$$ entonces $$
+\pi=\int_{a}^x f(s)ds=\dfrac{x-a}{b-a}\text{   si } a\leq x\leq b.\\
+$$ Notemos que $$\pi=\dfrac{x-a}{b-a}=-\dfrac{a}{b-a}+x\dfrac{1}{b-a},$$
+definiendo $\beta_0=-\dfrac{a}{b-a}$ y $\beta_1=\dfrac{1}{b-a}$, se
+tiene que $\pi=\beta_0+\beta_1 x$.
+
+Así este **modelo lineal** es equivalente a usar como función enlace $g(x)=x$ imponiendo restricciones sobre $x$, $\beta_0$  y $\beta_1$ correspondientes a que $a\leq x\leq b$. Este tipo de restricciones son las que no permiten que podamos aplicar de manera directa los métodos estándares para estimar $\beta_0$ y $\beta_1$.
+
+Veremos ahora uno de los modelos mas útiles y mayor mente usados en en datos de bioensayo llamado **modelo probit**. En este modelo se usa la distribución normal como distribución de tolerancia, con lo cual $\pi$ viene dado por:
+
+\[
+\pi=\dfrac{1}{\sigma\sqrt{2\pi}}\int_{-\infty}^x e^{-\frac{1}{2}\left(\frac{s-\mu}{\sigma}\right)^2} ds=\Phi\left(\dfrac{x-\mu}{\sigma}\right),
+\]
+donde $\Phi$ denota la función de distribución para la distribución normal estándar. Así se sigue que:
+\[
+\Phi^{-1}(\pi)=\beta_0+\beta_1 x,
+\]
+donde $\beta_0=-\mu/\sigma$,  $\beta_1=1/\sigma$ y la función de enlace es la inversa de la función de distribución de la normal.
+
+**Nota:** Estos modelos probit son usados en muchas áreas de biología y ciencias sociales en las cuales se les da una interpretación natural al modelo; por ejemplo si se está en un contexto biológico,  $x=\mu$ es llamada **dosis letal media** LD(50), por que esta corresponde da la dosis que puede esperar que acabe con la mita de los animales.
+
+Otro modelo que nos da resultados muy similares al modelo probit, pero que computacionalmente es mas sencillo, es el **modelo logístico** o **modelo logit**. En este modelo la distribución de tolerancia es 
+
+
+$$
+f(s)=\dfrac{\beta_1{\exp{(\beta_0+\beta_1 s)}}}{(1+\beta_1{\exp{(\beta_0+\beta_1 s)})^2}},
+$$
+así que 
+\[
+\pi=\int_{-\infty}^x f(s)ds=\dfrac{\exp{(\beta_0+\beta1 x)}}{1+\exp{(\beta_0+\beta_1 x)}},
+\]
+con lo cual nos la función de enlace
+\[
+\log\left(\dfrac{\pi}{1-\pi}\right)=\beta_0+\beta_1 x.
+\]
+El término $\log(\pi/(1-\pi))$ es llamado función logit. Este modelo logístico es ampliamente usado para datos binomiales
+
+Otras modelos usados para datos respuesta-dosis, son por ejemplo si consideramos como distribución de tolerancia la **distribución de valor extremo**
+\[
+f(s)=\beta_1\exp{[\beta_0+\beta_1 s-\exp{(\beta_0+\beta_1 s)}]}
+\]
+entonces 
+\[
+\pi=1-\exp{[-\exp{(\beta_0+\beta_1 x)}]},
+\]
+de donde se sigue
+\[
+\log{[-\log{(1-\pi)}]}=\beta_0+\beta_1 x.
+\]
+Aquí la función de enlace es $g(x)=\log{[-\log{(1-x)}]}$ la cual se le llama **función log log complementaria**
+
+**Ejemplo 1: Mortalidad de escarabajos**
+El siguiente conjunto de datos  muestra el numero de escarabajos muertos después de cinco horas de exposición a gas de disulfuro de carbono en varias concentraciones.
+```{r}
+Dosis<-c(1.6907,1.7242,1.7552,1.7842,1.8113,1.8369,1.8610,1.8839)
+Poblacion<-c(59,60,62,56,63,59,62,60)
+Muertes<-c(6,13,18,28,52,53,61,60)
+Tabla1<-cbind(Dosis,Poblacion,Muertes)
+Tabla1<-data.frame(Tabla1)
+names(Tabla1)<-c("Dosis, x_i","Número de escarabajos, n_i", "Número de muertes, y_i")
+Tabla1
+```
+```{r}
+plot(Dosis,Muertes/Poblacion,pch=20,cex=1.7,ylab="Proporción de muertes",sub=TeX(r'(Proporción de muertes $p_i=y_i/n_i$ vs dosis $x_i$)'))
+```
+Comentario: En este ejemplo estamos consideramos $x_i$ como el logaritmo de la cantidad de disulfuro de carbono. 
+
+El propósito en este ejemplo será ajustar un modelo logístico. Como usaremos el modelo logístico, se tiene que las proporciones se expresan como
+\[
+\pi_i=\log\left(\dfrac{\pi_i}{1-\pi_i}\right),
+\]
+con lo cual
+\[
+\log\left(\dfrac{\pi_i}{1-\pi_i}\right)=\beta_0+\beta_1 x_i
+\] 
+y 
+\[
+\log{(1-\pi_i)}=\log{[1+\exp{(\beta_0+\beta_1 x_i)}]}.
+\]
+Por otro lado, en un inicio habíamos encontrado que la función de log verosimilitud viene dada por
+\[
+l(\pi_1,\ldots,\pi_n;y_1,\ldots,y_n)=\left[\sum_{j=1}^{N}y_j\log\left(\dfrac{\pi_j}{1-\pi_j}\right)+  n_j\log(1-\pi_j)+\log\binom{n_j}{y_j}\right]
+\]
+sustituyendo las expresiones ya encontradas, la log verosimilitud se reduce a 
+\[
+l(\pi_1,\ldots,\pi_n;y_1,\ldots,y_n)=\left[\sum_{j=1}^{N}y_j(\beta_0+\beta_1 x_j)+  n_j\log{[1+\exp{(\beta_0+\beta_1 x_i)}]}\log\binom{n_j}{y_j}\right].
+\].
+Derivando la log verosimilitud con respecto a $\beta_0$ y $\beta_1$, tenemos que los scores vienen dados por:
+
+\[
+\begin{split}
+U_1=&\dfrac{\partial l}{\partial \beta_0}=\sum_{i=1}^N \left(y_i-n_i\left[\dfrac{\exp{(\beta_0+\beta_1 x_i)}}{1+\exp{(\beta_0+\beta_1 x_i)}}\right]\right)=\sum_{i=1}^N(y_i-n_i\pi_i)\\
+U_2=& \dfrac{\partial l}{\partial \beta_1}=\sum_{i=1}^N \left(y_i x_i-n_i x_i\left[\dfrac{\exp{(\beta_0+\beta_1 x_i)}}{1+\exp{(\beta_0+\beta_1 x_i)}}\right]\right)=\sum_{i=1}^N x_i(y_i-n_i\pi_i).
+\end{split}
+\]
+Similarmente realizando las respectivas cuentas, encontramos que la matriz de información es 
+\[
+J=\left[
+\begin{array}{cc}
+\sum_{i=1}^N n_i\pi_i (1-\pi_i)&\sum_{i=1}^N n_i x_i\pi_i (1-\pi_i)\\
+\sum_{i=1}^N n_i x_i\pi_i (1-\pi_i) & \sum_{i=1}^N n_i x_i^2\pi_i (1-\pi_i)
+\end{array}
+\right].
+\]
+Por lo visto en el capitulo de estimación, sabemos que para encontrar los estimadores de máxima verosimilitud los podemos obtener iterativamente solucionando la ecuación
+\[
+J^{(m-1)} \textbf{b}^m =J^{(m-1)}\textbf{b}^{(m-1)}+U^{(m-1)}
+\]
+donde el superindice $(m)$ indica la $m$-ésima aproximación y $\textbf{b}$ es el vector de estimaciones.
+
+Con las expresiones ya encontradas, procederemos a encontrar las estimaciones de los parámetros $\beta_0$ y $\beta_1$, siguiendo las ideas del capitulo de estimaciones.
+
+Para ello con la siguiente función podremos realizar el numero de simulaciones que deseemos hasta encontrar las estimaciones entre dos iteraciones seguidas no varié mucho.
+
+
+```{r}
+y <- c(6,13,18,28,52,53,61,60)
+n <- c(59,60,62,56,63,59,62,60) 
+x <- c(1.6907,1.7242,1.7552,1.7842,1.8113,1.8369,1.8610,1.8839) 
+n_y <- n-y
+beetle.mat=cbind(y,n_y)
+res.glm1 <- glm(beetle.mat~x, family=binomial(link="logit"))
+fitted.values(res.glm1)
+fit_p <- c(fitted.values(res.glm1))
+fit_y <- n*fit_p
+fit_y
+fit_p
+```
+
+
+```{r}
+## Función para realizar estimación de máxima verosimilitud basada en los resultados del capitulo 4, la cual principalmente sigue la idea del algoritmo Newton Raphson.
+
+# Parámetros que requiere esta función 
+# num_itera = # de iteraciones que deseamos realizar para estimar los parámetros de Máxima verosimilitud.
+# Poblaciones = Vector que contiene el tamaño de cada sub población para cada predictor.
+# predictores = Vector de variables predictoras consideradas para cada sub población.
+#respuestas = Vector de respuestas asociadas a cada sub población.
+
+estimacion<-function(num_itera,b_inicial,Poblaciones,predictores,respuestas){
+  for (i in 1:num_itera) {
+      proporcion<-exp(b_inicial[1]+b_inicial[2]*predictores)/(1+exp(b_inicial[1]+b_inicial[2]*predictores)) 
+      # Vector de la proporciones para cada sub población
+  U0 <- sum(respuestas-Poblaciones*proporcion)
+  U1 <- sum(predictores*(respuestas-Poblaciones*proporcion))
+  U<-matrix(c(U0,U1),ncol=1,byrow = T)
+  J_11 <- sum(Poblaciones*proporcion*(1-proporcion))
+  J_12 <- sum(Poblaciones*predictores*proporcion*(1-proporcion))
+  J_21 <- sum(Poblaciones*predictores*proporcion*(1-proporcion))
+  J_22 <- sum(Poblaciones*predictores^2*proporcion*(1-proporcion))
+  J<-matrix(c(J_11,J_12,J_21,J_22),ncol = 2,byrow = T)
+  J_inv<-solve(J)
+  b_inicial <- b_inicial + J_inv%*%U
+  log_vero<-sum(respuestas*(b_inicial[1]+b_inicial[2]*predictores)-Poblaciones*log(1+exp(b_inicial[1]+b_inicial[2]*predictores)))
+  y_estim<-Poblaciones*proporcion
+  }
+  ResumIte<-list(b_inicial,log_vero,J_inv,y_estim)
+  return(ResumIte)
+}
+# los parámetros iniciales
+b0<-matrix(c(0,0),ncol=1,byrow=T)
+
+```
+```
+|              | Estimacion inicial| 1ra aprox    | 2da aprox    | 3ra aprox|
+|-------------------|-------------|---------------|--------------|--------|
+| ß_0               | 0           |-37.856        |-53.853        |-60.717 |
+| ß_1               | 0           |21.337         |30.384         |34.270  |
+| log-verosimilitud | -333.404    |-200.010       |-187.274       |-186.235|
+
+```
+
+
+<!-- Parte 2-->
+#### **Sección 7.4 Modelo de Regresión Logística General**
+
+El modelo de regresión logística lineal simple presentado antes,
+
+\[
+\log\left(\frac{\pi_i}{1-\pi_i}\right)=\beta_1+\beta_2 x_i
+\]
+
+utilizado en el ejemplo de la mortalidad de los escarabajos es simplemente un caso especial del modelo de de regresión logística general:
+\[
+logit(\pi_i)=\log\left(\frac{\pi_i}{1-\pi_i}\right)= x_{i}^{T}\beta,
+\]
+donde $x_i$ es un vector de mediciones continuas correspondiente a variables regresoras y variables "dummy" correspondientes a niveles de factor, y $\beta$ es el vector de parámetros. Este modelo es muy utilizado para utilizar datos que involucran variables de respuesta binarias o binomiales, así como varios regresores. 
+\newline
+
+Estimadores de máxima verosimilitud de los parámetros $\beta$, y en consecuencia, de las probabilidades
+\[
+\pi_i=g(x_{i}^{T}\beta), 
+\]
+se obtienen maximizando la función de log-verosimilitud dada por:
+\[
+l(\pi;y)=\sum_{i=1}^{N}\left[y_i\log(\pi_i)+(n_i-y_i)\log(1-\pi_i)+\log{\binom{n_i}{y_i}}\right].
+\]
+Dicha maximización se hace utilizando los métodos correspondientes.
+\newline
+
+El proceso de estimación es esencialmente el mismo siempre que los datos estén agrupados como frecuencias para cada patrón de covarianza (es decir, los datos están agrupados de acuerdo a si son observaciones con los mismos valores de todas las variables regresoras), o bien, si cada observación está codificada como un 0 o un 1, y su patrón de covarianza se enlistó de manera separada.
+\newline
+
+Si los datos pueden ser agrupados, entonces la respuesta $Y_i$ representará el número de éxitos para el patrón de covarianza $i$, y tal respuesta puede ser modelada por la distribución binomial. En cambio, si cada observación tiene un distinto patrón de covarianza, entonces $n_i=1$ y la respuesta $Y_i$ es binaria.
+\newline
+
+La devianza en este caso está dada por:
+\[
+D=2\sum_{i=1}^{N}\left[y_i\log\frac{y_i}{\hat{y_i}}+(n_i-y_i)\log\frac
+{n-y_i}{n-\hat{y_i}}\right]
+\]
+Tal expresión puede ser reescrita como:
+
+\[
+D=2\sum o\log\frac{o}{e},
+\]
+donde $o$ denota las frecuencias observadas $y_i$ y $(n_i-y_i)$, y $e$ denota las correspondientes frecuencias estimadas esperadas, o mejor dicho, los valores ajustados del modelo, $\hat{y_i}=n_i\hat{\pi_i} y (n_i-\hat{y_i})=(n_i-n_i\hat{\pi_i}). La suma es sobre todos los posibles valores de $i$.
+\newline
+
+Notamos que la deviance $D$ no involucra ningún "nuisance parameter", como el $\sigma^2$ en los modelos con respuestas normales. Por lo tanto, los test de bondad de ajuste pueden ser evaluados y las hipótesis pueden ser testeadas directamente utilizando la aproximación de la devianza:
+\[
+D\sim\chi^2(N-p),
+\]
+donde $p$ es el número de parámetros estimado y $N$ el número de patrones de covarianza.
+\newline
+
+Cabe destacar que los métodos de estimación y las distribuciones muestrales utilizadas para inferencia dependen de resultados asintóticos. Para pequeños estudios donde hay pocas observaciones para cada patrón de covarianza, los resultados asintóticos podrían ser malos. 
+
+**Ejemplo 2: Embriogénsis de Anteras**
+
+Los siguientes datos muestran respuestas $y_{jk}$ que representan el número de anteras embriogénicas de la especie de planta $Datura innoxia$ que fueron obtenidas cuando una cantidad $n_{jk}$ de anteras fueron preparadas bajo varias condiciones diferentes. Hay un factor cualitativo con dos niveles que da origen a 2 grupos $j\in{1,2}$ de anteras, el primero representa a las anteras del grupo control mientras que el segundo representa a las anteras del grupo tratado. Las primeras fueron tratadas coon un almacenamiento de 3 grados Celsius por 48 horas, mientras que las anteras del grupo control estuvieorn almacenadas con condiciones normales.
+\newline
+
+Así mismo, los dos grupos de anteras almacenadas en condiciones de control y de tratamiento fueron expuestas a los efectos de una fuerza centrífuga, la cual es una variable aleatoria continua. En este caso, hubieron tres valores de fuerza centrífuga a la que los grupos fueron expuestos. La idea es comparar los efectos del control y del tratamiento en las proporciones después de haber sido ajustadas a una furza centrífuga:
+
+|                             |        | Fuerza | Centrífuga | (g) |
+|-----------------------------|--------|--------|------------|-----|
+| Condicion de Almacenamiento |        | 40     | 150        | 350 |
+| Grupo Control               | $y_{1k}$ | 55     | 52         | 57  |
+|                             | $n_{1k}$ | 102    | 99         | 108 |
+| Grupo en tratamiento        | $y_{2k}$ | 55     | 50         | 50  |
+|                             | $n_{2k}$ | 76     | 81         | 90  |
+
+
+Las proporciones $p_{jk}=\frac{y_{jk}}{n_{jk}}$ en los grupos de control y de tratamiento son graficados contra la variable $x_k$ que representa el logaritmo de la fuerza centrífuga. Las proporciones de respuesta parecen ser más altas en el grupo tratado que en el grupo control, y al menos para el grupo tratado, la respuesta decrece con la fuerza centrífuga.
+\newline
+
+Compararemos ahora tres modelos logísticos para $\pi_{ij}$, la probabilidad de las anteras de ser embriogénicas, donde $j=1$ para el grupo control y $j=2$ para el grupo tratado, donde $j=1$ para el grupo control y $j=2$ para el grupo tratado, y $x_1=\log40=3.689$, $x_2=log 150=5.011$, y $x_3=log 350=5.868$.
+
+
+```{r}
+LogFC<-log(c(40,150,350))
+LogFC
+
+controly<-c(55,52,57)
+controln<-c(102,99,108)
+p1<-controly/controln
+p1
+tratamientoy<-c(55,50,50)
+tratamienton<-c(76,81,90)
+p2<-tratamientoy/tratamienton
+p2
+
+plot(LogFC,p2,ylim=c(0.5,0.8),pch=18,cex=1.5, xlab="",ylab="")
+par(new=T)
+plot(LogFC,p1,ylim=c(0.5,0.8),pch=19,cex=1.3,xlab="Log-Fuerza Centrífuga", ylab="Proporción que germinó")
+```
+
+
+\[
+\begin{split}
+Modelo1: logit \pi_{jk}=\alpha_j+\beta_j x_k \text{ es decir, diferentes interceptos y pendientes};\\
+&Modelo2: logit \pi_{jk}=\alpha_j+\beta x_k \text{ es decir, diferentes interceptos pero misma pendiente};\\
+&Modelo3: logit \pi_{jk}=\alpha+\beta x_k \text{ es decir, mismo intercepto y pendiente.}\\
+\end{split}
+\]
+Estos modelos fueron ajustados utilizando máxima verosimilitud. Los resultados resumidos se pueden ver en la siguiente tabla:
+
+| Modelo 1                | Modelo 2                | Modelo 3           |
+|-------------------------|-------------------------|--------------------|
+| $a_1$=0.234 (0.628)     | $a_1$=0.877 (0.487)     | $a$=1.021 (0.481)  |
+| $a_2-a_1$=1.977 (0.998) | $a_2-a_1$=0.407 (0.175) | $b$=-0.148 (0.096) |
+| $b_1$=-0.023 (0.127)    | $b$= -0.155             |                    |
+| $b2-b1$=-0.319 (0.199)  |                         |                    |
+| $D_1$=0.028             | $D_2$=2.619             | $D_3$=3.110        |
+
+
+Para probar la hipótesis nula de que la pendiente es la misma para los grupos de tratamiento y control, utilizamos la resta de devianzas $D_2-D_1=2.591$. Extrayendo los cuantiles necesarios para una distribución $\chi^2(1)$, el nivel de significancia está entre 0.1 y 0.2, y por lo tanto podríamos concluir que los datos nos dan poca evidencia en contra de que las pendientes sean iguales. Sin embargo, el poder de este test y las estimaciones para el Modelo 1 suguieren que aunque la pendiente para el grupo control puede ser cero, la pendiente para el grupo con el tratamiento es negativa. 
+\newline
+
+Comparación de devianzas de los modelos 2 y 3 nos dan una prueba para la igualdad de los efectos de la fuerza centrífuca del grupo control y del grupo tratado: D_3-D_2=0.491, lo cual es consistente con la hipótesis de que los efectos de almacenamiento no son diferentes. Las proporciones observadas y los correspondientes valores ajustdos para los modelos 1 y 2 se muestran en la tabla siguiente:
+
+| Condición de almacenamiento | Número del regresor | Frecuencia observada |           | Frecuencias esperadas |          |
+|-----------------------------|---------------------|----------------------|-----------|-----------------------|----------|
+|                             |                     |                      | Modelo 1  | Modelo 2              | Modelo 3 |
+| Control                     | $x_1$               | 55                   | 54.82     | 58.75                 | 62.91    |
+|                             | $x_2$               | 52                   | 52.47     | 52.03                 | 56.40    |
+|                             | $x_3$               | 57                   | 56.72     | 53.22                 | 58.18    |
+| Tratamiento                 | $x_1$               | 55                   | 54.83     | 51.01                 | 46.88    |
+|                             | $x_2$               | 50                   | 50.43     | 50.59                 | 46.14    |
+|                             | $x_3$               | 50                   | 49.74     | 53.40                 | 48.49    |
+
+Es claro que el modelo 1 ajusta muy bien los datos, sin embargo, no es de sorprender pues en dicho modelo se utilizaron 4 parámetros para describir seis datos, por lo que se está presentando un sobreajuste considerable.
+
+#### **Sección 7.5 Estadísticos de bondad de ajuste**
+
+En lugar de utilizar estimación por máxima verosimilitud, podríamos utilizar los parámetros utilizando mínimos cuadrados ponderados. Es decir, minimizando a siguiente suma de cuadrados ponderada:
+\[
+S_{w}=\sum_{i=1}^N\frac{(y_i-n_i\pi_i)^2}{n_i\pi_i(1-\pi_i)},
+\]
+puesto que $E(Y_i)=n_i\pi_i$ y $Var(Y_i)=n_i\pi_i(1-\pi_i)$.
+Lo anterior es equivalente a minimizar el estadístico Chi-cuadrado de Pearson, dado por:
+\[
+X^{2}=\sum\frac{(o-e)^2}{e},
+\]
+donde $o$ representa las frecuencias observadas, $e$ representa las frecuencias esperadas y la suma es sobre todos los posibles valores de $i$. 
+\newline
+
+Cuando $X^2$ es evaluado en las frecuencias estimadas esperadas, el estadístico es:
+\[
+X^2=\sum_{i=1}^N \frac{(y_i-n_i\hat{\pi_i})^2}{n_i\hat{\pi_i}(1-\hat{\pi_i})},
+\]
+el cual es asintóticamente equivalente a la devianza descrita en la sección anterior, ajustada a este contexto:
+
+\[
+D=2\sum_{i=1}^{N}\left[y_i\log\frac{y_i}{n_i\hat{\pi_i}}+(n_i-y_i)\log\frac
+{n-y_i}{n-n_i\hat{\pi_i}}\right]
+\]
+
+La prueba de la relación entre el estadístico $X^2$ y la devianza $D$ anterior, usa series de Taylor.
+\newline
+
+La distribución asintótica de $D$, bajo la hipótesis de que el modelo es correcto, es $D\sim \chi^2(N-p)$, y por lo tanto según lo anterior, $X^2\sim\chi^2(N-p)$. La elección entre $D$ y $X^2$ dependerá de la adecuación de la aproximación a la distribución anterior. 
+\newline
+
+Se ha encontrado evidencia de que $X^2$ es a menudo mejor que $D$, puesto que $D$ es indebidamente influído por frecuencias muy pequeñas. Además, es sabido que ambas aproximaciones serán malas si las frecuencias esperadas son demasiado pequeñas.
+\newline
+
+En particular, si cada observación tiene un patrón de covarianzas de tal forma que $y_i$ es cero o 1 (binario), entonces ninguno de los estadísticos anteriores nos da una medida útil de ajuste. Esto puede suceder si las variables regresoras son todas continuas, por ejemplo.
+\newline
+
+En este caso, de acuerdo a Hosmer y Lemeshow, la mejor manera de abordar esta situación es agrupar las observaciones en categorías con base en sus probabilidades predichas. Típicamente 10 grupos son usados con aproximadamente una cantidad igual de observaciones en cada grupo. Los números de éxitos y fracazos observados en cada uno de los, digamos, $g$ distintos grupos, son resumidos como en la tabla 7.1. Luego, el estadístico chi-cuadrada de Pearson para una tabla como la anterior se puede calcular y usar como una medida de ajuste.
+\newline
+
+A tal estadístico se le denomina estadístico Hosmer-Lemeshow, y se denota por $X^2_{HL}$. Se ha encontrado que la distribución muestral de este estadístico es aproximadamente $\chi^2(g-2)$. 
+\newline
+
+A menudo la función de log-verosimilitud para el modelo ajustado es comparada con la función de log-verosimilitud para un modelo minimal, en el cual los valores $\pi_i$ son todos iguales (en contraste con el modelo saturado que es usado para definir la devianza). Bajo el modelo minimal, 
+\[
+\pi=\frac{\sum y_i}{\sum n_i}
+\]
+
+Así, si denotamos por $\hat{\pi_i}$ al valor estimado de la probabilidad para $Y_i$ bajo el modelo de interés (de tal forma que $\hat{y_i}=n_i\hat{\pi_{i}}$), el estadístico definido por
+\[
+C=2[l(\hat{\pi};y)-l(\pi;y)]
+\]
+donde $l$ es la función de log-verosimilitud, se conoce como el estadístico de cociente de verosimilitudes chi-cuadrado.
+\newline
+
+Se puede ver que la distribución muestral aproximada para $C$ es $\chi^2(p-1)$ si todos los $p$ parámetros, excepto el intercepto, son cero. De otra forma, $C$ tendrá una distribución no central. Así, $C$ es un estadístico de prueba para la hipótesis de que ninguna de las variables explicativas es necesaria para un modelo sencillo.
+\newline
+
+Por último, de manera análoga al coeficiente de determinación $R^2$ de los modelos de regresión múltiple, otro estadístico a veces utilizado es el "pseudo R^2":
+\[
+pseudo R^2=\frac{l(\pi;y)-l(\hat{\pi};y)}{l(\pi;y)},
+\]
+el cual representa la mejora proporcional en la función de log-verosimilitud debida a los términos en el modelo de interés, comparado con el modelo minimal. Este es producido por algunos programas estadísticos como un estadístico de bondad de ajuste.
+
+<!-- Parte 3-->
+
+
+#### **Sección 7.6 Residuales**
+
+Existen dos tipos de residuales principales para $D$ y $X^2$ en el modelo de regresión logística. Si hay $m$ **patrones de los regresores**, entonces se peuden calcular $m$ residuales. Sea $Y_k$ la cantidad de éxitos, $n_k$ la cantidad de realizaciones y $\hat \pi_k$ la probabilidad estimada de éxito para el $k$-ésimo patrón de regresores. Definimos el **residual de Pearson** o **residual ji cuadrada** como,
+
+$$ X_k = \frac{(y_k - n_k\hat\pi_k)}{\sqrt{n_k \hat\pi_k(1-\hat\pi_k)}}, \qquad k = 1, \dots, m. $$
+
+Con esto, tenemos, por la definición antoriormente dada del estadístico $X^2$ de bondad de ajuste de Pearson que
+
+$$ \sum_{k=1}^m X_k^2 = X^2. $$
+
+Los **residuales estandarizados de Pearson** son,
+
+$$ r_{Pk}  = \frac{X_k}{\sqrt{1 - h_k}}, $$
+
+donde $h_k$ es el apalancamoento que se obtiene de la matriz *hat* del modelo.
+
+Los **residuales de devianza** pueden ser definidos de manera similar,
+
+$$ d_k = \text{sign}(y_k - n_k \hat \pi_k) \left\{ 2 \left[ y_k \log \left( \frac{y_k}{n_K\hat\pi_k}\right) + (n_k - y_k)\log \left( \frac{n_k - y_k}{ n_k - n_k \hat \pi_k } \right)   \right] \right\}^{1/2}, $$ donde los términos \$\text{sign}(y_k - n_k \hat \pi\_k) \$ garantizan que $d_k$ tenga el mismo que $X_k$. De la definición de la devianza podemos ver que
+
+$$ D = \sum_{k=1}^m d_k^2. $$
+
+Los **residuales de devianza estandarizados** son
+
+$$r_{Dk} = \frac{d_k}{\sqrt{1 - h_k}}.$$
+
+Al igual que en el caso de la regresión lineal, los residules de Pearson y de devianza pueden ser usados para verificar el ajuste del modelo y el cumplimiento de los supuestos. Ejemplos de usos son graficarlos contra los regresores, o gráficos de normalidad, ya que cuando la caantidad de datos es lo suficientemente grande, los residuales se comportan aproximadamente normales.
+
+Si los datos son binarios o si hay una cantidad relativamente pequeña de observaciones por cada patrón de los regresores, entonces las gráficas de residuales serán no informativas, y por lo tanto habrá que recurrir a otros diagnósticos.
+
+**Sección 7.7 Otros diagnósticos**
+
+Existen estadísticos para detectar observaciones influyentes en la regresión logística (los análogos para la regresión lineal múltiple se exponen en la sección 6 del libro). En el caso de regresión lineal múltiple, estso estadísticos llamados delta-beta, delta-devianza y delta-ji cuadrada, es simplemente la diferencia entre el estimador calculador usando todos los puntos observados y el estimador calculado quitando uno de los puntos, similar a los residuales PRESS. Por ejemplo, el estadístico delta-beta es,
+
+$$ \Delta_i \hat \beta_j = b_j - b_{j(i)}, $$
+
+donde $b_j$ es el estimador de $\beta_j$ usando todos los datos y $\beta_{j(i)}$ es el estimador obtenido al quitar la $i$-ésima observación. En el caso de la regresión logística es posible encontrar estadísticos similares para medir el nivel de ajuste del modelo.
+
+Cuando tenemos respuestas binarias, hay más cosas que considerar, lo primero es la elección de nuestra función liga. Un enfoque es considerar la familia general de funciones
+
+$$ g(\pi,\alpha) = \log\left[ \frac{(1-\pi)^{-\alpha} -1}{\alpha} \right]. $$
+
+Cuando $\alpha = 1$, entonces $g(\pi)= \log[\pi/(1-\pi)]$, la función logit. Cuando $\alpha\to 0$, $g(\pi) \to \log[-\log(1-\pi)]$, la función log-log complementaria. En principio, un valor óptimo de $\alpha$ puede ser estimado de los dartos, pero el proceso requiere varios pasos. Como no existe un software adecuado para encontrar a $\alpha$, se recomienda experimentar con diversas funciones liga.
+
+El segundo problema al evaluar la adecuación de los modelos para datos binarios es la **sobredispersión**. Los valores observados $Y_i$ podrían tener una varianza más grande que la varianza teórica de la distribución binomial propuesta (debido a que en esta distribución, un único parámetro determina la media y la varianza). Esto puede ser un indicaador de que la devianza es más grande que el valor esperado de $N-p$, y podría ser causado por que el modelo está subespecificado, o porque tiene una estructura más compleja que el modelo propuesto.
+
+Una alternativa para solucionar este problema es incorporar un parámetro extra $\phi$ en el modelo, de forma que $Var(Y_i) = n_i\pi_i(1-\pi_i)\theta$, en `R`, esto se logra al especificar un modelo cuasibinomial en lugar de binomial en la función \``glm`. Una posible explicación de la sobredispersión de los datos, es que las observaciones en realidad no sean independientes, lo que causa que en ciertos patrones del regresor se tenga una menor cantidad de observaciones efectivas al existir correlación.
+
+### **Sección 7.8 Ejemplo: Senilidad y WAIS**
+
+Se realizó un examen psiquiátrico a una muestra de personas mayores para determinar qué síntomas de senilidad presentaban. Otras medidas tomadas al mismo tiempo incluyeron el puntaje de un subconjunto en la Escala de Inteeligencia Adulta de Wechsler (WAIS). Los valores registrados se encuentran en la siguiente tabla ($s$ es la presencia de síntomas de senilidad y $x$ el WAIS). Nos interesa modelar $s$ como una función de $x$.
+
+| x   | s   | x   | s   | x   | s   | x   | s   | x   | s   |
+|-----|-----|-----|-----|-----|-----|-----|-----|-----|-----|
+| 9   | 1   | 7   | 1   | 7   | 0   | 17  | 0   | 13  | 0   |
+| 13  | 1   | 5   | 1   | 16  | 0   | 14  | 0   | 13  | 0   |
+| 6   | 1   | 14  | 1   | 9   | 0   | 19  | 0   | 9   | 0   |
+| 8   | 1   | 13  | 0   | 9   | 0   | 9   | 0   | 15  | 0   |
+| 10  | 1   | 16  | 0   | 11  | 0   | 11  | 0   | 10  | 0   |
+| 4   | 1   | 10  | 0   | 13  | 0   | 14  | 0   | 11  | 0   |
+| 14  | 1   | 12  | 0   | 15  | 0   | 10  | 0   | 12  | 0   |
+| 8   | 1   | 11  | 0   | 13  | 0   | 16  | 0   | 4   | 0   |
+| 11  | 1   | 14  | 0   | 10  | 0   | 10  | 0   | 14  | 0   |
+| 7   | 1   | 15  | 0   | 11  | 0   | 16  | 0   | 20  | 0   |
+| 9   | 1   | 18  | 0   | 6   | 0   | 14  | 0   |     |     |
+
+En este caso, como hay un solo regresor, los patrones de regresores son simplemente los niveles de $x$. Estos se resumen en la tabla a continuación.
+
+| x    | y   | n   | $\hat\pi$         | X       | d       |
+|------|-----|-----|-------------------|---------|---------|
+| 4    | 1   | 2   | 0.751             | -0.826  | -0.766  |
+| 5    | 0   | 1   | 0.687             | 0.675   | 0.866   |
+| 6    | 1   | 2   | 0.614             | -0.33   | -0.326  |
+| 7    | 1   | 3   | 0.535             | 0.458   | 0.464   |
+| 8    | 0   | 2   | 0.454             | 1.551   | 1.777   |
+| 9    | 4   | 6   | 0.376             | -0.214  | -0.216  |
+| 10   | 5   | 6   | 0.303             | -0.728  | -0.771  |
+| 11   | 5   | 6   | 0.24              | -0.419  | -0.436  |
+| 12   | 2   | 2   | 0.186             | -0.675  | -0.906  |
+| 13   | 5   | 6   | 0.142             | 0.176   | 0.172   |
+| 14   | 5   | 7   | 0.107             | 1.535   | 1.306   |
+| 15   | 3   | 3   | 0.08              | -0.509  | -0.705  |
+| 16   | 4   | 4   | 0.059             | -0.5    | -0.696  |
+| 17   | 1   | 1   | 0.043             | -0.213  | -0.297  |
+| 18   | 1   | 1   | 0.032             | -0.181  | -0.254  |
+| 19   | 1   | 1   | 0.023             | -0.154  | -0.216  |
+| 20   | 1   | 1   | 0.017             | -0.131  | -0.184  |
+| Suma | 40  | 54  |                   |         |         |
+|      |     |     | Suma de cuadrados | 8.084\* | 9.418\* |
+
+El modelo de regesión ajustado
+
+$$ \log\left( \frac{\pi_i}{1 - \pi_i} \right) = \beta_1 + \beta_2 x_i; \qquad Y_i \sim \text{Bin}(n_i,\pi_i) \quad i = 1, \dots, m,  $$
+
+fue ajustado con los siguientes resultados:
+
+$b_1 = 2.404$, con error estándar se$(b_1) = 1.192$; $b_2 = -0.3235$, con error estándar se$(b_2) = 0.1140$; $X^2 = \sum X_i^2 = 8.083$, y $D = \sum d_i^2 = 9.419$.
+
+Como hay $m=17$ patrones de covariantes y $p=2$ parámetros, $X^2$ y $D$ pueden ser comparados con $\chi^2_{15}$.
+
+La siguiente es la gráfica de niveles del regresor vs. frecuencia observada.
+
+```{r}
+library(dplyr)
+x <- c(9, 13, 6, 8, 10, 4, 14, 8, 11, 7, 9, 7, 5, 14, 13, 16, 10, 12, 11, 14, 15, 18, 7, 16, 9, 9, 11, 13, 15, 13, 10, 11, 6, 17, 14, 19, 9, 11, 14, 10, 16, 10, 16, 14, 13, 13, 9, 15, 10, 11, 12, 4, 14, 20)
+s <- c(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+
+data <- data.frame( cbind(x,s))
+colnames(data) <- c("x", "s")
+
+gdata <- group_by(data,x)
+resumen <- summarize(gdata, sum=sum(s), n=n(), pi=sum(s)/n)
+
+plot(resumen$x,resumen$pi, xlab="Puntaje WAIS", ylab="Proporción con síntomas")
+
+exito <- as.character(s)
+
+```
+
+Ajustamos el modelo con la función `glm`.
+
+```{r}
+res.glm <- glm(data$s ~ data$x, family=binomial(link="logit"))
+summary(res.glm)
+```
+
+Gráfica de la curva logística contra los datos observados. Podemos notar que el ajuste es mejor para valores más grandes del regresor.
+
+```{r}
+fit <- (exp( res.glm$coefficients[1] + res.glm$coefficients[2]*resumen$x ) ) / (( 1 + exp( res.glm$coefficients[1] + res.glm$coefficients[2]*resumen$x ) ))
+
+plot(resumen$x,resumen$pi, xlab="Puntaje WAIS", ylab="Proporción con síntomas")
+lines(resumen$x, fit )
+```
+
+```{r}
+resumen
+```
+
+Como en cada nivel del regresor hay pocas obervaciones, podríamos usar el enfoque de Hosmer-Lemeshow para evaluar el ajuste. En la siguiente tabla se muestra el resumen del método para $g=3$ categorías.
+
+| Values of $\hat \pi$      |     | $\le 0.107$ | 0.108 - 0.303 | \> 0.303 |
+|---------------------------|-----|-------------|---------------|----------|
+| Corresponding values of x |     | 14 - 20     | 10 - 13       | 4 - 9    |
+| Number of people          | o   | 2           | 3             | 9        |
+| with symptoms             | e   | 1.335       | 4.479         | 8.186    |
+| Number of people          | o   | 16          | 17            | 7        |
+| without symptoms          | e   | 16.665      | 15.521        | 7.814    |
+| Total number of people    |     | 18          | 20            | 16       |
+
+El estadístico de Hosmer-lemeshow es obtenido al calcular $X^2 = \sum \frac{(o-e)^2}{e}$, con esto obtenemos $X_{HL}^2 = 1.15$, que no es tan siginificativo comparado con una distribución $\chi^2_1$.
+
+#### **Extra: Ejemplo con base de datos Titanic**
+
+```{r}
+setwd("C:\\Users\\Esaúl\\Documents\\Maestría en Probabilidad y Estadística\\2 Segundo semestre\\Modelos estadísticos I\\Presentación final")
+titanic <- read.csv("titanic.csv")
+head(titanic)
+```
+
+Ajustamos un modelo de regresión logística para explicar la supervivencia en función de la edad.
+
+```{r}
+modelo.titanic <- glm(titanic$Survived ~ titanic$Age, family=binomial(link="logit"))
+summary(modelo.titanic)
+```
+
+```{r}
+gtit <- group_by(titanic,Age)
+resumen.tit <- summarize(gtit, Exitos=sum(Survived), n=n(), pi=sum(Survived)/n)
+resumen.tit
+```
+
+```{r}
+fit.tit <- (exp( res.glm$coefficients[1] + res.glm$coefficients[2]*resumen.tit$Age ) ) / (( 1 + exp( res.glm$coefficients[1] + res.glm$coefficients[2]*resumen.tit$Age ) ))
+
+plot(resumen.tit$Age,resumen.tit$pi, xlab="Edad", ylab="Proporción de supervivientes")
+lines(resumen.tit$Age, fit.tit )
+```
+

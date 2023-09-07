@@ -1,0 +1,67 @@
+---
+title: "Secciones 1 y 2"
+author: "Irving"
+date: "2023-06-06"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+## **Introducción**
+
+Las redes neuronales forman parte de nuestra vida cotidiana. Están en prácticamente a donde sea que miremos: desde su implementación en aplicaciones de entretenimiento, videojuegos, o animación en producciones cinematográficas, hasta su uso en sistemas de defensa, el ámbito bancario o en el sector médico.
+
+En este documento presentamos una introducción breve pero concisa al tema de redes neuronales. Se aborda brevemente la historia de las mismas, así como su analogía la red neuronal biológica del cerebro humano.
+
+Posteriormente, se realiza un estudio del Perceptrón Simple, el cual es el modelo de red neuronal más sencillo que existe. Se hace una conexión con el tema de regresión logística y el análisis de discriminante. Se presenta también el perceptrón múltiple.
+En este ámbito se presenta el teorema de Aproximación universal y la no linealidad.
+
+Después se presenta el concepto de entrenamiento de una red neuronal, y el algoritmo más popular hasta ahora para dicha tarea, conocido como Algoritmo Backpropagation.
+
+Finalmente, se presenta el tema de arquitecturas de redes neuronales, algunas aplicaciones, y avances recientes, así como la implementación de una red neuronal y la presentación de un ejemplo.
+
+
+### **Breve historia de las redes neuronales**
+
+
+Las redes neuronales fueron desarrolladas fuertemente a partir de la década de 1980. No obstante, su origen moderno se remonta a la década de 1940. El trabajo de Warren McCulloch y Walter Pitts, a menudo considerado el origen del campo de las redes neuronaes, consistió en mostrar que las redes de neuronas artificiales (en el sentido que será explicado en este documento), podrían, en principio, calcular cualquier función lógica o aritmética.
+
+Posteriormente, la primera aplicación práctica de redes neuronales artificales ocurrió en la década de 1950, con la invención de la red del perceptrón y la regla de aprendizaje propuesta por Frank Rosenblatt en 1958. En dicho trabajo, Rosenblatt y sus colegas construyeron una red basada en un perceptrón y demostraron su habilidad para realizar reconocimiento de patrones. 
+
+Este éxito momentaneo generó una gran cantidad de interés en la investigación de redes neuronales. No obstante, más tarde fue mostrado que el perceptrón básico sólo podía resolver un conjunto limitado de problemas.
+
+A la par, Bernard Widrow y Ted Hoff en 1960 introdujeron un nuevo algoritmo de aprendiade y lo tulizaron para entrenar redes neuronales adaptativas lineales, las cuales eran similares en estructura y capacidad al perceptrón simple de Rosenblatt. 
+A pesar del trabajo de los autores anteriores, las desventajas de sus redes neuronales eran similares y fueron Marvin Minsky y Seymour Papert en una publicación de 1969 quienes ampliamente difundieron tales desventajas, y a pesar de la publicación de nuevos modelos para solventar estas ventajas, Rosenblatt y Widrow no fueron capaces de modificar con éxito sus algoritmos de aprendizaje para entrenar redes neuronales más complejas.
+
+Debido a la influencia de la publicación de Minsky y Papert, la investigación en redes neuronales se vio mermada y se creía que el tema había sido agotado. Esto junto con el hecho de que no había suficiente potenica computacional en la época como para experimentar e implementar nuevos modelos, hicieron que muchos investigadores también abandonaran el campo.
+
+A lo largo de la década de 1970, importantes pero esporádicos avances fueron realizados en el campo. No obstante, para la década de 1980, la potencia computacional había mejorado a tal grado que los impedimentos para experimentar en nuevos modelos de redes neuronales se habían superado. Y el desarrollo clave de la década de 1980 fue el alogirmo Backpropagation para entrenar las redes de perceptrón multicapa. Dicho algoritmo fue descubierto independientemente por varios investigadores, pero la publicación más influyente del algoritmo Backpropagation fue la hecha por David Rumelhart y James McClelland en 1986. Este algoritmo era la solución a las debilidades que tanto fueron criticadas por Minsky y Papert en la década de los 60.
+
+Dichos desarrollos revitalizaron el campo de las redes nueronales, y desde la década de 1980, una gran cantidad de artículos han sido publicados, en donde se han propuesto nuevos modelos, descubierto aplicaciones, y desarrollado teoría y aplicaciones prácticas.
+
+En la actualidad, la gran potencia computacional disponible, así como nuevos algoritmos de entrenamiento y arquitecturas de redes innovadoras, hacen de las redes neuronales una herramienta esencial en situaciones apropiadas, a pesar de ciertamente no ser la solución a cualquier problema. Se espera que con el entendimiento progresivo del funcionamiento del cerebro humano, avances trascendentes en redes neuronales aguardan en el futuro.
+
+### **Redes neuronales artificiales vs Redes neuronales biológicas**
+
+Las redes neuronales artificales están lejos de ser equivalentes a su contraparte biológica. No obstante, en cierto sentido se trata de imitar el complejo entramado del cerebro.
+
+El cerebro consiste de aproximadamente $10^{11}$ de neuronas que están altamente conectadas entre sí. A grandes rasgos, una neurona consiste simplemente del cuerpo de las neuronas mismas, de los axones y de las dendritas. Las dendritas se pueden entender como ramas de árboles que reciben las señales eléctricas de los axones de otras neuronas, mientras que un axon es una fibra larga que se encarga de transportar una señal eléctrica del cuerpo de la célula hacia otras neuronas. El punto de contacto entre las dendritas de una neurona y el axón de otra, se llama sinapsis. 
+
+Es el complejo arreglo de neuronas y las conexiones entre ellas, junto con el proceso químico que experimentan lo que da forma a la red neuronal del cerebro.
+
+En cambio, las redes neuronales artificales están lejos de aproximar una red neuronal de un cerebro humano, sin embargo hay dos aspectos clave que son similares entre las redes biológicas y las artificales. 
+
+La primera similitud es que los bloques básicos de ambas redes, las neuronas, son simples estructuras de cálculo que están altamente interconectadas (aunque ciertamente la complejidad de las neuronas biológicas es sumamente mayor que la de las neuronas artificales). La segunda similitud es que es la conexión entre las neuronas las que determinan la función de la red.
+
+Si bien las neuronas biológicas son muy lentas comparadas con un circuito eléctrico, pues la velocidad de las reacciones químicas es del orden de $10^{-3}$ segundos comparado con los $10^{-10}$ segundos de un circuito, el cerebro es capaz de llevar a cabo muchas taras mucho más rápido que muchas computadoras, lo cual es en parte gracias a la estructura masiva en paralelo de las redes neuronales: todas las neuronas funcionan al mismo tiempo.
+
+Tal forma de funcionamiento es la que en parte se busca en la actualidad al implementar redes neuronales, pues si bien la potencia computacional de la actualidad es alta, crear estructuras en paralelo puede potenciar muchísimo más la capacidad de una red neuronal artificial.
+
+### **El Perceptrón Simple y la relación con la regresión logística**
+
+
+

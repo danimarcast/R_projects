@@ -1,0 +1,417 @@
+---
+title: "Introducción a las redes neuronales artificiales en predicción"
+author: Juan Esaul González Rangel, Daniel Stiven Martínez Castillo, Iván Irving Rosas
+  Domínguez
+date: "2023-06-04"
+output:
+  html_document:
+    df_print: paged
+  pdf_document: default
+---
+## **Introducción**
+
+Las redes neuronales forman parte de nuestra vida cotidiana. Están en prácticamente a donde sea que miremos: desde su implementación en aplicaciones de entretenimiento, videojuegos, o animación en producciones cinematográficas, hasta su uso en sistemas de defensa, el ámbito bancario o en el sector médico.
+
+En este documento presentamos una introducción breve pero concisa al tema de redes neuronales. Se aborda brevemente la historia de las mismas, así como su analogía la red neuronal biológica del cerebro humano.
+
+Posteriormente, se realiza un estudio del Perceptrón Simple, el cual es el modelo de red neuronal más sencillo que existe. Se hace una conexión con el tema de regresión logística y el análisis de discriminante. Se presenta también el perceptrón múltiple.
+En este ámbito se presenta el teorema de Aproximación universal y la no linealidad.
+
+Después se presenta el concepto de entrenamiento de una red neuronal, y el algoritmo más popular hasta ahora para dicha tarea, conocido como Algoritmo Backpropagation.
+
+Finalmente, se presenta el tema de arquitecturas de redes neuronales, algunas aplicaciones, y avances recientes, así como la implementación de una red neuronal y la presentación de un ejemplo.
+
+
+### **Breve historia de las redes neuronales**
+
+
+Las redes neuronales fueron desarrolladas fuertemente a partir de la década de 1980. No obstante, su origen moderno se remonta a la década de 1940. El trabajo de Warren McCulloch y Walter Pitts, a menudo considerado el origen del campo de las redes neuronaes, consistió en mostrar que las redes de neuronas artificiales (en el sentido que será explicado en este documento), podrían, en principio, calcular cualquier función lógica o aritmética.
+
+Posteriormente, la primera aplicación práctica de redes neuronales artificales ocurrió en la década de 1950, con la invención de la red del perceptrón y la regla de aprendizaje propuesta por Frank Rosenblatt en 1958. En dicho trabajo, Rosenblatt y sus colegas construyeron una red basada en un perceptrón y demostraron su habilidad para realizar reconocimiento de patrones. 
+
+Este éxito momentaneo generó una gran cantidad de interés en la investigación de redes neuronales. No obstante, más tarde fue mostrado que el perceptrón básico sólo podía resolver un conjunto limitado de problemas.
+
+A la par, Bernard Widrow y Ted Hoff en 1960 introdujeron un nuevo algoritmo de aprendiade y lo tulizaron para entrenar redes neuronales adaptativas lineales, las cuales eran similares en estructura y capacidad al perceptrón simple de Rosenblatt. 
+A pesar del trabajo de los autores anteriores, las desventajas de sus redes neuronales eran similares y fueron Marvin Minsky y Seymour Papert en una publicación de 1969 quienes ampliamente difundieron tales desventajas, y a pesar de la publicación de nuevos modelos para solventar estas ventajas, Rosenblatt y Widrow no fueron capaces de modificar con éxito sus algoritmos de aprendizaje para entrenar redes neuronales más complejas.
+
+Debido a la influencia de la publicación de Minsky y Papert, la investigación en redes neuronales se vio mermada y se creía que el tema había sido agotado. Esto junto con el hecho de que no había suficiente potenica computacional en la época como para experimentar e implementar nuevos modelos, hicieron que muchos investigadores también abandonaran el campo.
+
+A lo largo de la década de 1970, importantes pero esporádicos avances fueron realizados en el campo. No obstante, para la década de 1980, la potencia computacional había mejorado a tal grado que los impedimentos para experimentar en nuevos modelos de redes neuronales se habían superado. Y el desarrollo clave de la década de 1980 fue el alogirmo Backpropagation para entrenar las redes de perceptrón multicapa. Dicho algoritmo fue descubierto independientemente por varios investigadores, pero la publicación más influyente del algoritmo Backpropagation fue la hecha por David Rumelhart y James McClelland en 1986. Este algoritmo era la solución a las debilidades que tanto fueron criticadas por Minsky y Papert en la década de los 60.
+
+Dichos desarrollos revitalizaron el campo de las redes nueronales, y desde la década de 1980, una gran cantidad de artículos han sido publicados, en donde se han propuesto nuevos modelos, descubierto aplicaciones, y desarrollado teoría y aplicaciones prácticas.
+
+En la actualidad, la gran potencia computacional disponible, así como nuevos algoritmos de entrenamiento y arquitecturas de redes innovadoras, hacen de las redes neuronales una herramienta esencial en situaciones apropiadas, a pesar de ciertamente no ser la solución a cualquier problema. Se espera que con el entendimiento progresivo del funcionamiento del cerebro humano, avances trascendentes en redes neuronales aguardan en el futuro.
+
+### **Redes neuronales artificiales vs Redes neuronales biológicas**
+
+Las redes neuronales artificales están lejos de ser equivalentes a su contraparte biológica. No obstante, en cierto sentido se trata de imitar el complejo entramado del cerebro.
+
+El cerebro consiste de aproximadamente $10^{11}$ de neuronas que están altamente conectadas entre sí. A grandes rasgos, una neurona consiste simplemente del cuerpo de las neuronas mismas, de los axones y de las dendritas. Las dendritas se pueden entender como ramas de árboles que reciben las señales eléctricas de los axones de otras neuronas, mientras que un axon es una fibra larga que se encarga de transportar una señal eléctrica del cuerpo de la célula hacia otras neuronas. El punto de contacto entre las dendritas de una neurona y el axón de otra, se llama sinapsis. 
+
+Es el complejo arreglo de neuronas y las conexiones entre ellas, junto con el proceso químico que experimentan lo que da forma a la red neuronal del cerebro.
+
+En cambio, las redes neuronales artificales están lejos de aproximar una red neuronal de un cerebro humano, sin embargo hay dos aspectos clave que son similares entre las redes biológicas y las artificales. 
+
+La primera similitud es que los bloques básicos de ambas redes, las neuronas, son simples estructuras de cálculo que están altamente interconectadas (aunque ciertamente la complejidad de las neuronas biológicas es sumamente mayor que la de las neuronas artificales). La segunda similitud es que es la conexión entre las neuronas las que determinan la función de la red.
+
+Si bien las neuronas biológicas son muy lentas comparadas con un circuito eléctrico, pues la velocidad de las reacciones químicas es del orden de $10^{-3}$ segundos comparado con los $10^{-10}$ segundos de un circuito, el cerebro es capaz de llevar a cabo muchas taras mucho más rápido que muchas computadoras, lo cual es en parte gracias a la estructura masiva en paralelo de las redes neuronales: todas las neuronas funcionan al mismo tiempo.
+
+Tal forma de funcionamiento es la que en parte se busca en la actualidad al implementar redes neuronales, pues si bien la potencia computacional de la actualidad es alta, crear estructuras en paralelo puede potenciar muchísimo más la capacidad de una red neuronal artificial.
+
+### **El Perceptrón Simple y la relación con la regresión logística**
+
+
+
+Comenzamos por hacer una breve descripción de una neurona artificial: una neurona con una sola entrada se muestra en la siguiente ilustración:
+
+
+<p style = 'text-align:center;'>
+<img src="/Users/danimathud/Documents/GitHub/R_projects/RNA/Percep.png" width="350px">
+</p> 
+
+
+Una neurona artifical de una sola entrada está compuesta de los siguientes elementos: un escalar $p \in \mathbb{R}$ el cual fungirá como la *entrada* de la neurona; un escalar $w\in \mathbb{R}$ (a menudo también denotado en la literatura como $c$), el cual será un *peso*; un escalar $b\in \mathbb{R}$ denominado *sesgo*, y una función $f:\mathbb{R}\to [0,1]$, denominada *función de activación* o *función de transferencia*. 
+
+La idea es que la entrada $p$ debe multiplicarse por el peso $w$, y a tal producto se le debe sumar el sesgo $b$. Al término $n=pw+b$ se le denomina la *entrada de la red*. Posteriormente, al término $n$ se le aplica la función $f$, y obtenemos el valor $a=f(n)=f(pw+b)$. A dicho valor $a$ se le conoce como la salida de la neurona.
+
+Si relacionamos el funcionamiento de esta neurona con el funcionamiento de una neurona biológica, es clara la analogía entre el input $p$ con un impulso eléctrico que recibe una dendrita de una neurona. Dicho impulso es llevado al interior de la neurona y procesado, que en esta analogía corresponde al proceso de obtener el término $a=f(pw+b)$, y finalmente el impulso enviado por el axon es justamente el término $a$.
+
+Podemos desde ya pensar en que la elección del peso $w$y del sesgo $b$ (el cual ciertamente actúa como un peso, pero con la función especial de desplazar el producto $pw$) está libre a nuestra elección, y que justamente va a jugar un papel importante en el entrenamiento de nuestra red. Asimismo, podemos ver que la elección de la función de transeferencia es importante, puesto que dependiendo de esta, la salida $a$ puede variar. Típicamente la función de activación $f$ está a elección del diseñador de la red neuronal, y precisamente una buena regla de aprendizaje debe ser tal que haga la correcta elección de los parámetros $w$ y $b$, para lograr que la red neuronal realice correctamente la tarea para la cual fue creada.
+
+### **Funciones de transferencia**
+
+Las funciones de transferencia pueden ser lineales o no lineales en el argumento $n$. Una función de transferencia particular es elegida en fucnión del problema al que se esté enfrentando la neurona. No obstante, existen funciones de transferencia clásicas, las cuales están enmarcadas en la siguiente tabla:
+
+| Nombre                        | Expresión                                                  | Codominio  |
+|-------------------------------|------------------------------------------------------------|------------|
+| Función escalón               | \( \displaystyle f(n) =  \left\{\begin{array}{cc}          |
+| 0                             | \text{si } n<0                                             |
+| 1                             | \text{si } n \ge 0                                         |
+| \end{array} \right. \)        | \(\{0,1\}\)                                                |
+| Función escalón simétrica     | \( \displaystyle f(n) = \left\{\begin{array}{cc}           |
+| -1                            | \text{si } n>0                                             |
+| 1                             | \text{si } n \ge 0                                         |
+| \end{array} \right. \)        | \(\{-1,1\}\)                                               |
+| Lineal                        | \(\displaystyle f(n) = n\)                                 | \(\mathbb{R}\)     |
+| Lineal saturada               | \( \displaystyle f(n) = \left\{\begin{array}{cc}           |
+| 0                             | \text{si } n<0                                             |
+| n                             | \text{si } 0 \le n \le 1                                   |
+| 1                             | \text{si } n > 0                                           |
+| \end{array}  \right.\)        | \([0,1]\)                                                  |
+| Lineal saturada simétrica     | \( \displaystyle f(n) = \left\{\begin{array}{cc}           |
+| -1                            | \text{si } n<-1                                            |
+| n                             | \text{si } 0 \le n \le 1                                   |
+| 1                             | \text{si } n > 0                                           |
+| \end{array}  \right.\))       | \([-1,1]\)                                                 |
+| Sigmoide logística            | \(\displaystyle f(n) = \frac{1}{1 +e^{-n}}\)               | \((0,1)\)  |
+| Sigmoide tangente hiperbólica | \(\displaystyle f(n) = \frac{e^n - e^{-n}}{e^n + e^{-n}}\) | \((-1,1)\) |
+| Lineal positiva               | \( \displaystyle f(n) = \left\{\begin{array}{cc}           |
+| 0                             | \text{si } n<0                                             |
+| n                             | \text{si } n \ge 0                                         |
+| \end{array} \right. \)        | \(\mathbb{R}^+\)                                                   |
+
+
+En particular, una función muy utilizada es la función logística dada por:
+
+\(\displaystyle f(n) = \frac{1}{1 +e^{-n}}\)
+
+la cual posee propiedades deseables en una función de transferencia: continua, diferenciable, su rango es [0,1], y además es la función que surge en el estudio de la regresión logística.
+
+###**Neuronas con múltiples entradas, capas de neuronas y múltiples capas de neuronas**
+
+En principio, una neurona artifical es una estructura que podrá tener su utilidad para calcular alguna salida deseada. Sin embargo, la idea de las redes neuronales, nuevamente en analogía con las redes neuronales cerebrales, es la de tener muchas neuronas conmuchas entradas y a su vez interconectadas con muchas otras neuronas.
+
+Para ello, notemos que una neurona artifical con una sola entrada bien puede ser generalizada a una neurona con una cantidad $R$ de entradas. Para ello se debe a su vez tener una cantidad de $R$ pesos a multiplicar en cada una de tales entradas. 
+
+Posteriormente, una capa se forma con la presencia de una cantidad $S$ de neuronas, y finalmente una red neuronal se formará con la presencia de $K$ capas de neuronas, cada una produciendo outputs que servirán como inputs de todas las neuronas de la siguiente capa.
+
+
+
+
+## **El perceptrón multicapa.**
+
+Las redes neuronales de una sola capa mostradas anteriormente tienen ciertas limitaciones en términos de las funciones que pueden aproximar, o las regiones de clasificación que pueden aproximar. En esta sección introduciremos el perceptrón multicapa, que consiste simplemente en un conjunto de capas de perceptrones en serie, y que tiene propiedades más generales.
+
+Podemos tener un conjunto de perceptrones simples o neuronas que reciben las mismas entradas cada una, y cada una de las cuáles produce una salida distinta, de acuerdo con los pesos y sesgos que ellas tengan. A este conjunto lo llamamos "capa" de una red neuronal. En un perceptrón multicapa, tenemos varias capas ordenadas secuencialmente, de manera que la salida de de la $k$-ésima capa es la entrada pra la $k+1$-ésima, y cada capa puede tener una cantidad de neuronas distinta. Esto se ejemplifica en la siguiente figura mediante un perceptrón de tres capas.
+
+
+**Perceptrón multicapa con tres capas ocultas**
+<p style = 'text-align:center;'>
+<img src="/Users/danimathud/Documents/GitHub/R_projects/RNA/3capas.png" width="700px">
+</p> 
+
+
+
+En la imagen notamos que cada salida final de la red puede ser vista como una composición sucesiva de la salida de las capas anteriores.
+
+En la práctica se suele distinguir entre la capa de entrada (donde se reciben los datos), la capa de salida (la última), y las llamadas capas ocultas (las que no entran en ninguna de las categorías anteriores). La cantidad de capas ocultas de una red es lo que se denomina "profundidad", y es de donde deriva el nombre "aprendizaje profundo" para el uso de redes neuronales artificiales".
+
+
+Aunque hay otras arquitecturas  o configuraciones de redes neuronales, el ejemplo del perceptrón multicapa es el más prototípico e ilustrativo, por lo que será el que se usará para explicar los conceptos en este documento.
+
+
+
+## **Aproximación mediante redes neuronales.**
+
+En esta sección mostramos cómo es que la idea de discriminante lineal falla en la clasificación de conjuntos que no son linealmente separables, y cómo este problema es solucionado por redes neuronales, además se da un teorema que garantiza la utilidad de las redes neuronales como aproximadores universales.
+
+### **No linealidad.**
+
+Podemos ver a la clasificación mediante discriminante lineal, o incluso regresión logística, como la partición de un espacio $d$-dimensional mediante hiperplanos (rectas en el caso de $\mathbb R^2$), esto define regiones poliédricas conexas y convexas en $\mathbb R^d$, pero no todo problema de clasificación puede ser resuelto mediente regiones de esta forma. Intuitivamente, el hecho de estar limitado a fronteras de decisión "lineales" causa que la clasificación mediante discriminante lineal falle, como veremos a continuación.
+
+Uno de lo los ejemplos de clasificación no-linealmente separable es el de la compuerta lógica `XOR`. Imaginemos los puntos en $\mathbb R^2$, $a=(0,0), b=(0,1), c=(1,0)$ y $d=(1,1)$, la compuerta lógica `XOR` asigna el valor $1$ a los puntos que tienen el valor 1 en exactamente una de sus entradas, pero no ambas (considerando que las entradas únicamente toman valores en $\{0,1\}$). El problema de clasficación es linealmente separable si existe un conjunto de hiperplanos (rectas en este caso) que delimiten regiones de clasificación que resuelvan el problema, en ese caso es posible encontrar unos pesos y un sesgo para un discriminante lineal que obtiene la clasificación perfecta. Visualmente, podemos confirmar que este no es el caso para la compuerta `XOR`.
+
+
+**Un ejemplo de frontera de decisión para el problema de clasificación XOR**
+<p style = 'text-align:center;'>
+<img src="/Users/danimathud/Documents/GitHub/R_projects/RNA/XOR_region.png" width="350px">
+</p> 
+
+
+
+No importa qué función de activación se use, una red neuronal de una sola capa (un conjunto de perceptrones simples en pralelo) no puede resolver el problema de la compurta `XOR` debido a que las fronteras de decisión son lineales. Una capa de procesamiento previo de los datos puede transformar el espacio de manera que la frontera de decisión de los datos transformados sea lineal, y de hecho se ha probado que se pueden resolver problemas con reglas de decisión no-lineales usando un perceptrón multicapa en el que únícamente los parámetros de una de las capas pueden ser modificados, el problema con este tipo de solución es que la cantidad de unidades requeridas para resolver el problema crece exponencialmente con la cantidad de puntos a ser clasificados, lo que motivó el estudio del redes neuronales profundas (donde los parámetros de todas las capas se pueden modificar) como una solución a este tipo de problemas.
+
+La siguiente configuración de una red neuronal con dos capas resuelve el problema de la compuerta `XOR`, y es un ejemplo ilustrativo de cómo la inclusión de más capas en la red amplía el potencial de aplicación del perceptrón simple.
+
+
+**Red neuronal para la compuerta XOR**
+<p style = 'text-align:center;'>
+<img src="/Users/danimathud/Documents/GitHub/R_projects/RNA/XOR.png" width="350px">
+</p> 
+
+
+
+En la figura, los círculos con la letra $b$ representan los sesgos asociados a cada unidad, mientras que los valores de las flechas representan los pesos, y los círculos con las leyendas son compuertas lógicas cuyas representaciones como red neuronal se encuentran en la siguientes imágenes.
+
+**Red neuronal para la compuerta ADN**
+
+<p style = 'text-align:center;'>
+<img src="/Users/danimathud/Documents/GitHub/R_projects/RNA/AND.png" width="350px">
+</p> 
+
+
+**Red neuronal para la compuerta NAND**
+<p style = 'text-align:center;'>
+<img src="/Users/danimathud/Documents/GitHub/R_projects/RNA/NAND.png" width="350px">
+</p> 
+
+
+**Red neuronal para la compuerta OR**
+
+<p style = 'text-align:center;'>
+<img src="/Users/danimathud/Documents/GitHub/R_projects/RNA/OR.png" width="350px">
+</p>  
+
+
+Como podemos observar en las figuras, cada compuerta lógica (o función booleana) puede ser representada por una red neuronal con ciertos pesos y sesgos asociados, incluida la compuerta ```XOR```.
+
+### **Aproximación universal de funciones.**
+
+Una manera útil de ver a las redes neuronales es como aproximadores de funciones, dado un conjunto de datos de entrada ***x***, y una función de estos puntos $y(\mathbf{x})$, una red neuronal puede ser vista como un conjunto de funciones que aproximan a $y$ al ser entrenada con los pares $(\mathbf x, y(\mathbf x))$. En el décimo tercer problema de su famosa lista, David Hilbert conjeturó que existen funciones continuas de tres variables que no pueden ser representadas como composiciones de funciones de dos variables. Kolmogorov mostró que toda función continua de varias variables (con dominio cerrado y accotado) puede ser representada como la composición de un número pequeño de funciones de una sola variable, este resultado fue generalizado después por Lorentz.
+
+#### ***Teorema (Kolmogorov y Lorentz).***   
+Sea $f$ una función continua con dominio en $[0,1]^d$. Entonces $f$ puede ser reescrita como sigue; sea $\delta > 0$ arbitrario, y elijamos un $\epsilon$ rational tal que $0<\epsilon\le \delta$. Entonces,
+
+$$ f = \sum_{k=1}^{2d + 1} g(z_k), $$
+
+donde $g: \mathbb R \to \mathbb R$ es una función continua que depende de $f$ y $\epsilon$, y cada $z_k$ es,
+
+$$ z_k = \sum_{j=1}^d \lambda^k \psi( x^{(j)} + \epsilon k ) + k. $$
+
+En esta última expresión $\psi$ es es una función monótona creciente y $\lambda \in \mathbb R$. Ambos son independientes de $f$ y $\psi$ es Lipschitz.
+
+En términos de redes neuronales, lo que este teorema afirma es que cualquier función continua $y(\mathbf x)$ puede ser representada como una red neuronal de tres capas con $d(2d+1)$ unidades en la primera capa oculta, y $(2d + 1)$ unidades en la segunda. Esta red neuronal es conocida como la la red de Kolmogorov-Lorentz, y la parte más sorprendente de ella es que los pesos y sesgos, así como $\psi$ y $\lambda$ son conocidos de antemano, únicamente restando por conocer la función $g$ que depende de $f$.
+
+A pesar de la generalidad del teorema anterior para funciones continuas, su aplicación práctica es deficiente, pues no se conocen métodos constructivos para encontrar la función $g$, además, en la práctica no siempre buscamos aproximar funciones continuas y el teorema falla cuando se intentan aproximar funciones que no son continuas. Cuando usamos redes neuronales, normalmente predefinimos las funciones de activación y buscamos encontras los pesos y sesgos adecuados, no al revés.
+
+Existe un resultado más general sobre la propiedad de aproximación universal de las redes neuronales que sólo veremos heurísticamente.
+
+#### ***Teorema.***
+
+Dado un problema de clasificación con una región de decisión arbitraria, existe una red neuronal que lo resuleve.
+
+La prueba de este teorema se basa en la propiedad de las redes neuronales de aproximar cualquier función booleana, y la capacidad de los perceptrones de generar soluciones para problemas de clasificación linealmente separables. La idea es que ciertas capas de la neurona producen regiones de decisión lineales, mientras que capas posteriores realizan operaciones booleanas con ellas, llegando a regiones tan generales como sea necesario usando una cantidad suficiente de unidades.
+
+## **Entrenamiento de redes neuronales.**
+
+Hasta ahora, sólo hemos visto las capacidades de aproximación de las redes neuronales, pero no se ha menconado nada sobre cómo se puede llegar a una red que efectivamente nos ayude a resolver un problema. En esta sección hablaremos sobre cómo una red puede "aprender" para aproximar un mapeo dado desde un conjunto de puntos.
+
+Para hablar sobre "entrenamiento" o "aprendizaje" de una red neuronal, primero es necesario que especifiquemos a qué nos referimos por estos términos. Evidentemente, lo que buscamos es una red que tenga el "mejor" comportamiento al solucionar un problema de interés, este "mejor comportamiento" puede ser evaluado de varias maneras usando distintas métricas de acuerdo con la situación, pero una práctica común es usar la suma de errores cuadráticos entre los valores ajustados por la red $\hat{\mathbf{y}}_i$ y los valores observados $\mathbf{y}_i$,
+
+$$ SSE = \sum_{k=1}^n J^2(\hat{\mathbf{y}}_k,\mathbf{y}_k) = \sum_{k=1}^n \sum_{j=1}^d ( \hat y_{k,i} - y_{k,i} )^2, $$ donde hay $n$ observaciones o datos de entrenamiento, y $d$ es la dimensión de la salida de la red, de esta forma $y_{k,i}$ representa la coordenada $i$-ésima del $k$-ésimo punto observado.
+
+En el caso del perceptrón simple, sabemos por la regresión logística que este error es minimizado usando técnicas de modelos lineales generalizados teniendo las bondades de los estimadores de máxima verosimilitud. Cuando tenemos una red más compleja (o métricas distintas) no es posible usar el mismo procedimiento, en su lugar, usamos un procedimiento iterativo.
+
+Tipicamente no buscamos un mínimo global para la función de error, ya que esto se traduciría en un sobreajuste del modelo. En su lugar buscamos llegar a un mínimo local, de manera que la red sea lo suficientemente flexible para realizar predicciones con nuevos valores de entrada.
+
+El algoritmo usado generalmente para obtener los estimadores de los pesos $c_j$ es llamado descenso del gradiente o *backpropagation*.
+
+Sea $c_{k,0}^i$ el sesgo asociado a la $i$-ésima neurona de la $k$-ésima capa, y sea $c_{k,j}^i$ el $j$-ésimo peso de la $i$-ésima neurona en la $k$-ésima capa. Podemos pensar al error (cualquier métrica que nombremos así) como una función que depende de los pesos de la red neuronal,
+
+$$ SSE = \varphi(c_{1,0}^1, c_{1,1}^1, \dots, c_{n,m}^l), $$
+
+para una red con $n$ capas, $l$ neuronas en la última capa, y $m$ pesos asociados a dicha neurona. Si nombramos
+
+$$ J^2_k = \sum_{j=1}^d ( \hat y_{k,i} - y_{k,i} )^2, $$
+
+entonces
+
+$$ SSR = \sum_{k=1}^n J^2_k. $$
+
+Nombrando además $z_{k,m}^i = \sigma(\psi_k^i(\mathbf x)) = \sigma\left( c_{k,0}^i + \sum_{j=1}^m c_{k,j}^i \sigma(\psi_{k-1}(\mathbf{x})) \right)$, donde $\psi_{k-1}(\mathbf x)$ es la salida de la capa $k-1$, obtenemos que
+
+$$ \frac{\partial J_k^2}{\partial c_{n,j}^i} = -2(y_{ik} - \hat{y_{ik}}) c_{n,j}^i \sigma'\left(  c_{n-1,0}^i + \sum_{j=1}^m c_{n-1,j}^i \sigma(\psi_{n-1}(\mathbf{x}) ) \right) $$
+
+Como la salida de cada capa es una función de la salida de la capa anterior, podemos usar la regla de la cadena para obtener la derivada de los parámetros en las capas más cercanas en la salida, por medio de la derivada de los términos más cercanos a la entrada de la red, hasta llegar a los términos en la capa de entrada, que son función únicamente de los valores de entrada, y por lo tanto pueden ser obtenidos de manera explícita. Sea $c_{n,j}^{i,r}$ el parámetro $c_{n,j}^i$ obtenido después de la $r$-ésima iteración del algoritmo, definimos de manera recursiva,
+
+\[ c_{n,j}^{i,r} = c_{n,j}^i - \gamma_r \sum_{k=1}^n \frac{\partial J_k^2}{\partial c_{n,j}^i}. \]
+
+En este caso, la contante $\gamma_r$ es un hiperparámetro del modelo, conocido como "tasa de aprendizaje", y su elección depende comunmente de un métod heurístico. 
+
+Una vez que se han encontrado todas las derivadas y actualizado los valores para los parámetros, se calcula el error con los nuevos pesos, y se repite el proceso de evaluación del error, cálculo de derivadas y actualización, hasta un punto establecido previamente que puede ser a) un número predefinido de iteraciones, o 2) un umbral para el error de la red. El proceso iterativo es lo que se conoce como *backpropagation*.
+
+La principal ventaja del algoritmo *backpropagation* es que permite mejorar los parámetors de la red mediante pasos que involucran únicamente las relación de una neurona con las adyacentes, por lo que su implementación con herramientas de *software* en paralelo es muy eficiente y ha permitido un crecimiento considerable en el uso de redes neuronales en años recientes.
+
+Podemos resumir el algoritmo de *backpropagation* en los siguientes pasos:
+
+- Se eligen valores iniciales para los sesgos y los pesos, y se aplica un vector de valores de entrada $\mathbf{x}$ a la red, se calcula la salida de la red con estos pesos y sesgos iniciales (este paso es conocido como *feedforward*).
+- Se evalúan las derivadas del error con respecto a cada uno de los parámetros, y se calcula la diferencia entre el valor actual del parámetro y la suma de las derivadas respecto a él, multiplicada por la tasa de entrenamiento.
+- Se actualizan todos los parámetros con los nuevos valores obtenidos con las derivadas y la tasa de entrenamiento este paso es conocido como *backpropagation*).
+- Se alimenta con entradas de nuevo la red actualizada y se calcula el error, para repetir los pasos anteriores, hasta que se llega a un criterio de convergencia (o número de iteraciones).
+
+
+#### **Aspectos prácticos del entrenamiento de redes neuronales.**
+
+
+Frecuentemente se dice que entrenar correctamente una red neuronal es un arte, pues no existen precedimientos formales, y depende más bien de la experiencia de la persona que lo implementa. Hay ciertos aspectos que deben ser tomados en cuenta cuando se planea el entrenamiento de una red neuronal.
+
+##### **Tasa de entrenamiento y valores iniciales.**
+
+
+Como en todo problema de optmización, la convergencia del algortimo *backpropagation* se ve afectada por la elección de los valores iniciales de los pesos y los sesgos. Por la naturaleza de las funciones sigmoides, sabemos que cerca del cero tienden a comportarse como funciones lineales, por lo tanto, una práctica común es elegir valores iniciales cercanos a cero, para que el modelo sea aproximadamente lineal en las primeras iteraciones, y se vuelva menos lineal cuando es entrenado. Sin embargo, se debe ser cuidadoso con esta práctica, pues valores muy pequeños pueden hacer que las derivadas sean cercanas a cero también y los parámetros nunca se actualizan, por lo que tendríamos que el algoritmo nunca converge.
+
+Además de los valores iniciales, debe considerarse cuál es la tasa con la que se actualizan los parámetros. Una tasa muy pequeña haría que el algoritmo converja muy lentamente, lo que sería un desperdicio de tiempo y recursos, una tasa muy grande, podría causar que los valores actualizados disten mucho unos de otros, causando que se muevan muy rápido en el espacio de parámetros y por lo tanto el algoritmo no alcance un mínimo local.
+
+##### **Sobreajuste.** 
+
+Como se incluyen muchos parámetros en las redes neuronales, es posible que se llegue a crear un sobreajuste a los datos, debido a esto, es común que se detenga el entrenamiento de la red en un número fijo de iteraciones mucho antes de que se alcance un mínimo local. Otra práctica usual es usar un conjunto de validación con el cuál medir el nivel de ajuste de la red, y se detiene el entrenamiento cuando el error en el conjunto de validación comienza a aumentar.
+
+
+##### **Escala de la entrada de la red.**
+
+La escala de los datos de entrada determina la entrada de los pesos y sesgos de la red, por loq ue puede influir en el nivel de ajuste que se logra. Una solución al probelma de la escala es estandarizar los datos para que tengan media cero y varianza uno (cada coordenada de la entrada), de esta forma todas las entradas tienen la misma escala y los pesos reflejan mejor la "importancia" o "influencia" de esta entrada, de manera similar a lo que ocurre con la escala unitaria usada en regresión múltiple. Con lass entradas estandarizadas, normalmente se eligen los pesos iniciales como variables aleatorias uniformes en $[-0.7,0.7]$. 
+
+
+## **Arquitectura, aplicación y avances recientes de las redes neuronales**
+
+
+### **Arquitectura**
+
+La arquitectura de las redes neuronales se compone de una capa de entrada, salida y oculta. Las propias redes neuronales, o redes neuronales artificiales (ANN), son un subconjunto de aprendizaje automático diseñado para imitar la potencia de procesamiento del cerebro humano. Las redes neuronales funcionan pasando datos a través de las capas de una neurona artificial  los cuales se transforman internamente mediante una función de activación y como ultimo nos entregan una salida con la cual se toma una decisión.
+
+Gráficamente una red neuronal tiene una estructura como sigue
+<p style = 'text-align:center;'>
+<img src="/Users/danimathud/Downloads/RedNeuronal1.png" width="500px">
+</p>   
+
+### **Componentes principales de una red neuronal**
+Como acabamos de mencionar una red neuronal se componen de una capa entrada , una capa oculta y una de salida, sin embargo internamente hay una una manipulación de los datos mediante una transformación de los mismos.
+
+Para poder describir las componentes de la red neuronal, recordemos su expresión matemática
+$$\psi(x)=c_0+\sum_{i=1}^d c_i \sigma(\psi_i(x)),$$
+a partir de esta tenemos que las componentes que conforman una red neuronal son las siguientes
+
+ + Entrada : Variable independiente $x$, que a fines prácticos son los datos que se le dan a modelo con fines de aprendizaje y entrenamiento 
+
+ + Pesos: Corresponde a las constantes $c_i$ las cuales nos ayudan a organizar las variables según su importancia y contribución al modelo que se este estudiando.
+
+ + Función de transferencia: Corresponde al procedimiento de sumar todas las entradas transformadas con el fin de combinarlas en una sola variable de salida, específicamente es la suma que aparece en la expresión matemática.
+
++ Función sigmoide ($\sigma$) : En la literatura y contextos de redes neuronales conocida como función de activación, es la que nos ayuda a decidir cuando si o no una neurona debe ser activada, en base a la importancia de las entradas que reciba la neurona. Como recordatorio estas funciones tienen  la característica de que $\displaystyle\lim_{x\to \infty} \sigma(x)=1$ y $\displaystyle\lim_{x\to -\infty} \sigma(x)=-1$
+
+
+### **Tipos de arquitecturas en redes neuronales**
+
+En el contexto de aprendizaje de maquina, las redes neuronales son una forma eficiente para solucionar problemas de la vida diaria, como puede ser en clasificación. Las redes neuronales nos ofrecen respuestas muy bastante precisas en lo que a solución de problemas se refiere, para poder obtener esta precisión se cuenta con distintos tipos de redes que son especificas para problemas concretos, ya que seleccionando la red adecuada podemos incrementar la eficiencia en los resultados que estemos buscando. Entre las redes neuronales mas comunes tenemos 
+
+
+**Redes neuronales estándar**:   
+
+Estas son las redes neuronales mas básicas entre ellas tenemos:
+  
+  + **Perceptron simple**:
+    
+<p style = 'text-align:center;'>
+<img src="/Users/danimathud/Downloads/Perceptron.png" width="500px">
+</p>    
+
+El discriminante lineal o perceptron simple es la red neuronal mas sencilla en donde no tenemos capas ocultas, en el perceptron los datos(input) son  transformados de manera lineal mediante una ponderación de manera que obtenemos una respuesta(output), brevemente la idea detrás de esto es que  tomamos una decisión 
+    $$\phi(x)=\left\{\begin{array}{cc}
+    0& \text{ si } \psi(x)\geq 1/2 \\\
+    1& \text{ e.o.c}
+    \end{array}\right.$$
+    
+basados en la combinación lineal 
+    $$\psi(x)=c_0+\sum_{i=1}^d c_i x_i,$$
+    
+donde como mencionamos en un inicio los $c_i's$ son los pesos, $c_0$ es el sesgo y $x=(x_1,\ldots,x_d)$. 
+
+           
+   + **Redes neuronales prealimentadas (FNN)**: 
+    
+<p style = 'text-align:center;'>
+<img src="/Users/danimathud/Downloads/FeedForward.png" width="600px">
+</p>   
+
+Este tipo de redes es de las primeras en donde consideramos capas ocultas son perceptron con capa oculta, brevemente la idea detrás de este tipo de redes es que ahora la decisión que se toma depende de 
+    $$\psi(x)=c_0+\sum_{i=1}^d c_i \sigma(\psi_i(x))$$
+    
+donde los $c_i$ son igual a como se mencionaron antes y cada $\psi_i(x)$ es de la forma 
+
+$$\psi_i(x)=b_i+\sum_{j=1}^d a_{ij} x_j$$
+
+En este caso de perceptron con una capa oculta decimos que hay $k$ neuronas ocultas y la salida de la $i$-ésima neurona oculta es $u_i=\sigma(\psi_i(x))$. De modo que podemos reescribir a $\psi(x)$ como
+$$\psi(x)=c_0+\sum_{i=1}^k c_i u_i$$
+    
+De igual forma a como consideramos una capa oculta las redes neuronales prealimentadas, se puede considerar mas capas ocultadas en la red neuronal, veamos el caso con dos capas ocultas y casos generales con mas capas siguen la misma idea.
+
+Para un perceptron con dos capas ocultas tenemos
+
+$$\psi_i(x)=c_0+\sum_{j=1}^l c_i z_i,$$
+donde 
+$$z_i=\sigma\left(d_{i0}+\sum_{j=1}^k d_{ij} u_j\right),\quad 1\leq i\leq l$$
+ y 
+ $$u_j=\sigma\left(b_j+\sum_{j=1}^k a_{ij} x_i\right),\quad 1\leq j\leq k$$
+ donde los $d_{ij},b_j$ y $a_{ij}$ son constantes. En este caso concreto contamos con $k$ neuronas ocultas en la primera capa y $l$ neuronas ocultas para la segunda capa.
+  
+
+ **Redes neuronales recurrentes (RNN)**
+ 
+<p style = 'text-align:center;'>
+<img src="/Users/danimathud/Downloads/RedRnn.png" width="400px">
+</p>  
+ 
+Las redes neuronales recurrentes (RNN) son un tipo de redes muy útiles, las cuales  recuerdan las predicciones aprendidas previamente para ayudar a hacer predicciones futuras con precisión (tienen memoria) el esquema de este tipo de redes se puede observar en la imagen anterior. Este tipo de redes son muy usados  en modelos de Deep learning  de problemas ordinales o temporales, como pueden ser la traducción idiomas o  el reconocimiento de voz(asistente como Alexa)
+
+La como acabamos de mencionar las RNN recuerdan las predicciones que han hecho para mejor la precisión un ejemplo de aplicación de este tipo de redes es el de predicción de texto, como por ejemplo cuando escribes una oración para enviárselo a un amigo, el celular aprende de las palabras que has usado y en el orden en que lo has hecho para hacerte sugerencias y escribir mas rápido, como puede ser en la oración **¿Como te ha ido?**, si empiezas con la palabra **como**, tu teclado te ira sugiriendo **te**, **ha** y **ido**, en incluso como va aprendiendo puede predecir que la palabra siguiente sera **hoy**.
+
+
+  + **Redes con memoria a corto y largo plazo (LSTM)**
+  
+<p style = 'text-align:center;'>
+<img src="/Users/danimathud/Downloads/RedLstm.png" width="700px">
+</p>   
+  
+  
+Las redes neuronales con memoria a corto y largo plazo (LSTM por sus siglas en ingles) son un tipo especial de redes recurrentes. La característica principal de las redes recurrentes es que la información puede persistir introduciendo ciclos  en la red, por lo que, básicamente, pueden  "recordar" estados previos y utilizar esta información para predecir la salida siguiente. Esta característica las hace muy adecuadas para manejar datos que provienen de series de tiempo. Mientras las redes recurrentes estándar pueden modelar dependencias a corto plazo (es decir, relaciones cercanas en la serie cronológica), las LSTM pueden aprender dependencias largas, por lo que se podría decir que tienen una memoria a más largo plazo
+  
+
+  
+**Redes neuronales convolucionales (CNN) **
+
+
+Mientras las RNN se usan comúnmente para el procesamiento del lenguaje natural y el reconocimiento de voz, las CNN se utilizan con mayor frecuencia para tareas de clasificación como lo son el análisis de imágenes, el procesamiento del lenguaje natural y otros problemas complejos de clasificación y visión por computadora. Antes de las CNN, se utilizaban métodos manuales y poco eficientes para identificar los objetos que aparecían en una imagen, lo cual a larga conllevaba mayor tiempo y gasto comunicacional. Sin embargo, las redes neuronales convolucionales ahora brindan un enfoque más escalable para las tareas de clasificación de imágenes y reconocimiento de objetos, aprovechando los principios del álgebra lineal, específicamente la multiplicación de matrices, para identificar patrones dentro de una imagen.
+
+
+
+
